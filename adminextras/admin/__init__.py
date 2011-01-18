@@ -1,0 +1,1 @@
+from modeladmin import CustomModelAdmin, CustomAdminSite

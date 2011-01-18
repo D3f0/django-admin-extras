@@ -120,7 +120,8 @@ class CustomModelAdmin(ModelAdmin):
         
         # Actualizar los valores
         attrs = CustomModelAdmin.field_type_attrs.get(type(field), {})
-        field.widget.attrs.update(**attrs)
+        if hasattr(field, 'widget'):
+            field.widget.attrs.update(**attrs)
         
         return field
     

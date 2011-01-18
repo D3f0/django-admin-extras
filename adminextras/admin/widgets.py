@@ -29,8 +29,8 @@ class AdminAutoCompleteFKInputWidget(TextInput):
         
         
         container = '<span class="autocomplete" url="%s">%s</span>'
-        hidden_input = '<input type="hidden" name="%s" value="%s">' % (name, value or '')
-        autocomp_input = '<input type="text" value="%s" onfocus="django.adminautocomp.check(this)" size="52">' % unicode(obj)
+        hidden_input = '<input type="hidden" name="%s" value="%s" id="id_%s">' % (name, value or '', name)
+        autocomp_input = '<input type="text" value="%s" onfocus="django.adminautocomp.check(this)" size="52" id="%s">' % (unicode(obj), 'aoutocomplete_'+name)
         #autocomp_input += '<a href="javascript:void(0);" onclick="django.adminautocomp.clear(this)" class="clear_autocomp">Borrar</a>'
         if hasattr(self, 'help_text'):
             help_text = "<p class='helptext'>%s</p>" % self.help_text
@@ -42,9 +42,7 @@ class AdminAutoCompleteFKInputWidget(TextInput):
     class Media:
         # Utiliza jQuery
         js = (
-              settings.MEDIA_URL + 'js/jquery/ui/1.8.2-full/js/jquery-1.4.2.min.js',
-              settings.MEDIA_URL + 'js/jquery/ui/1.8.2-full/js/jquery-ui-1.8.2.custom.min.js',
-              settings.MEDIA_URL + 'js/jquery/admin_autocomplete.js',
-              )
+                settings.STATIC_URL + 'js/adminextras/autocomplete.js',
+             )
     
 
