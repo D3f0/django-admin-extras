@@ -13,7 +13,7 @@ django.adminautocomp = (function (){
             autocomplete_url = $(span).attr('url'), 
             hidden = $(span).find('input[type=hidden]');
 		
-		console.log("Autocompleción en:", span, autocomplete_url, hidden, input);
+		//console.log("Autocompleción en:", span, autocomplete_url, hidden, input);
 		
 		$(input).autocomplete({
             source: function(request, response){

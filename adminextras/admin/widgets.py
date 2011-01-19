@@ -44,5 +44,6 @@ class AdminAutoCompleteFKInputWidget(TextInput):
         js = (
                 settings.STATIC_URL + 'js/adminextras/autocomplete.js',
              )
+        
     
 
