@@ -1,0 +1,18 @@
+{# Fix console.log, console.info, etc in brwosers which does not provide it #}
+{# #}
+<script type="text/javascript">
+	(function (){
+		var console_elements = ["memory", "profiles", "assert", "count",
+								"debug", "dir", "dirxml", "error", "group",
+								"groupCollapsed", "groupEnd", "info", "log",
+								"markTimeline", "profile", "profileEnd",
+								"time", "timeEnd", "trace", "warn" ];
+		if (!window.console) {
+			window.console = {};
+			for (var i = 0; i < console_elements.length; i++) {
+				window.console[console_elements[i]] = function () {}
+			}
+		}
+		
+	})();	
+</script>
