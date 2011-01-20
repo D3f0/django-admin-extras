@@ -2,3 +2,9 @@ ul.ui-autocomplete li {
 	list-style: none;
 }
 
+.autocomplete-info {
+	height: 1em;
+	background: red;
+	
+}
+

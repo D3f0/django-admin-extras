@@ -1,7 +1,9 @@
 /**
  * Autocompletado para los <span class="autocomplete">
  *  <input type="hiden">
- * basado en el plugin de jQuery UI
+ * basado en el plugin de jQuery UI.
+ * 
+ * Importante. Este plugin se activa cuando el autcompletado gana foco.
  */
 django.adminautocomp = (function (){
 	// Referencia estática al autocompletado en curso
@@ -13,8 +15,6 @@ django.adminautocomp = (function (){
             autocomplete_url = $(span).attr('url'), 
             hidden = $(span).find('input[type=hidden]');
 		
-		//console.log("Autocompleción en:", span, autocomplete_url, hidden, input);
-		
 		$(input).autocomplete({
             source: function(request, response){
                 $.ajax({
@@ -24,7 +24,8 @@ django.adminautocomp = (function (){
                         response(xhr.data);
                     },
                     error: function(){
-                        alert("Error en autocompletado");
+                    	console.log("Error de autocompletado");
+                        //alert("Error en autocompletado");
                     }
                 });
             },
@@ -51,6 +52,7 @@ django.adminautocomp = (function (){
 				}
 			}
 		});
+		
 		return input;
 	}
 	/**

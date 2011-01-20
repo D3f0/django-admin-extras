@@ -32,12 +32,12 @@ class AdminAutoCompleteFKInputWidget(TextInput):
         hidden_input = '<input type="hidden" name="%s" value="%s" id="id_%s">' % (name, value or '', name)
         autocomp_input = '<input type="text" value="%s" onfocus="django.adminautocomp.check(this)" size="52" id="%s">' % (unicode(obj), 'aoutocomplete_'+name)
         #autocomp_input += '<a href="javascript:void(0);" onclick="django.adminautocomp.clear(this)" class="clear_autocomp">Borrar</a>'
-        info_div = '<div class="autocomplete_info"></div>'
+        
         if hasattr(self, 'help_text'):
             help_text = "<p class='helptext'>%s</p>" % self.help_text
         else:
             help_text = ''
-        inner_widgets = '\n'.join([hidden_input, autocomp_input, help_text]) + '\n'
+        inner_widgets = '\n'.join([hidden_input, autocomp_input, help_text, ]) + '\n'
         return mark_safe(container % (self.url, inner_widgets))
     
     class Media:
