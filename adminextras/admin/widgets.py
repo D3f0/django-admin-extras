@@ -43,7 +43,7 @@ class AdminAutoCompleteFKInputWidget(TextInput):
     class Media:
         # Utiliza jQuery
         js = (
-                settings.STATIC_URL + 'js/adminextras/autocomplete.js',
+                'js/adminextras/autocomplete.js',
              )
         css = {
                'all': ('css/adminextras/autocomplete.css', )
