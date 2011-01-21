@@ -16,6 +16,12 @@ class Command(BaseCommand):
     '''
     Returns the count for models
     '''
+    help = 'Lists model instances (rows in the database)'
+    args = 'models, apps or nothing'
+
+    # Configuration shortcuts that alter various logic.
+    can_import_settings = True
+    requires_model_validation = True
     def handle(self, *apps_or_model_labels, **kwargs):
         
         
