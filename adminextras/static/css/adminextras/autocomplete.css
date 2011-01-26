@@ -8,3 +8,6 @@ ul.ui-autocomplete li {
 	
 }
 
+input.autocomplete, input.ui-autocomplete-input {
+	pading-left: 24px;
+}
