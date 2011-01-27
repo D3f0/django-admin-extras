@@ -117,6 +117,8 @@ def to_excel_admin_action(modeladmin, request, queryset):
     
     
     planilla = xlwt.Workbook(encoding='utf-8')
+    
+    
     nombre = unicode(model_meta.verbose_name_plural)
     hoja = planilla.add_sheet(nombre)
     
