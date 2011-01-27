@@ -64,7 +64,7 @@ class AdminAutoCompleteFKInputWidget(TextInput):
 #===============================================================================
 
 
-class EmptyCheckboxSelectMultiple(SelectMultiple):
+class EmptySelectMultiple(SelectMultiple):
     '''
     Allows the widget to render only those options 
     which are values
@@ -90,3 +90,42 @@ class EmptyCheckboxSelectMultiple(SelectMultiple):
                 output.append(self.render_option(selected_choices, option_value, option_label))
         return u'\n'.join(output)
 
+class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
+    '''
+    '''
+    def __init__(self, attrs=None, choices = ()):
+        super(Select, self).__init__(attrs)
+        self.choices = choices  # Evitamos que se converta en lista
+                                # para que no se evalue todo el queryset
+    
+    def render(self, name, value, attrs=None, choices=()):
+        print "*"*40
+        print value
+        print "Extra filter", getattr(self, 'extra_filter')
+        print "*"*40
+        #self.choices.queryset = self.choices.queryset.filter(pk__in = selected_choices)
+        if value is None: value = []
+        has_id = attrs and 'id' in attrs
+        final_attrs = self.build_attrs(attrs, name=name)
+        output = [u'<ul>']
+        # Normalize to strings
+        str_values = set([force_unicode(v) for v in value])
+        for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
+            if not str(option_value) in value:
+                print "Skipping", i, option_value, option_label
+                continue
+            # If an ID attribute was given, add a numeric index as a suffix,
+            # so that the checkboxes don't all have the same ID attribute.
+            if has_id:
+                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                label_for = u' for="%s"' % final_attrs['id']
+            else:
+                label_for = ''
+
+            cb = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            option_value = force_unicode(option_value)
+            rendered_cb = cb.render(name, option_value)
+            option_label = conditional_escape(force_unicode(option_label))
+            output.append(u'<li><label%s>%s %s</label></li>' % (label_for, rendered_cb, option_label))
+        output.append(u'</ul>')
+        return mark_safe(u'\n'.join(output))
