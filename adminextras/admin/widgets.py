@@ -19,7 +19,6 @@ class AdminAutoCompleteFKInputWidget(TextInput):
     administración.
     '''
     def __init__(self, queryset = None, url = None,  *largs, **kwargs):
-        print "Creando autocompletado para", queryset, url, largs, kwargs
         TextInput.__init__(self, *largs, **kwargs)
         self.url = url
         self.qs = queryset
@@ -92,6 +91,7 @@ class EmptySelectMultiple(SelectMultiple):
 
 class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
     '''
+    
     '''
     def __init__(self, attrs=None, choices = ()):
         super(Select, self).__init__(attrs)
@@ -99,11 +99,10 @@ class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
                                 # para que no se evalue todo el queryset
     
     def render(self, name, value, attrs=None, choices=()):
-        print "*"*40
-        print value
-        print "Extra filter", getattr(self, 'extra_filter')
-        print "*"*40
-        #self.choices.queryset = self.choices.queryset.filter(pk__in = selected_choices)
+        '''
+        Renderizar el HTML
+        '''
+        print "Choices para %s son %s " % (name, list(self.choices))
         if value is None: value = []
         has_id = attrs and 'id' in attrs
         final_attrs = self.build_attrs(attrs, name=name)
@@ -111,9 +110,7 @@ class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
         # Normalize to strings
         str_values = set([force_unicode(v) for v in value])
         for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
-            if not str(option_value) in value:
-                print "Skipping", i, option_value, option_label
-                continue
+            
             # If an ID attribute was given, add a numeric index as a suffix,
             # so that the checkboxes don't all have the same ID attribute.
             if has_id:
