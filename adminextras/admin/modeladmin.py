@@ -29,6 +29,7 @@ import string
 from django.utils.encoding import smart_unicode, force_unicode
 from django.template import Template
 from django.template.context import Context
+from django.http import HttpResponse
 
 FORMATO_FECHA = settings.DATE_INPUT_FORMATS[0]
 from django.core import urlresolvers
@@ -98,8 +99,6 @@ def override_foreignkeys(model_admin, db_field, request=None, **kwargs):
 from django.db import models
 
 class CustomModelAdmin(ModelAdmin):
-    
-    instances = {}
     '''
     Un ModelAdmin personzlizado que trabaja en conjunto con un AdminSite personalizado.
     Este model admin prvee las facilidades para la exportación a Excel y
@@ -108,6 +107,8 @@ class CustomModelAdmin(ModelAdmin):
     trabajen con un queryset muy extenso que podría elevar excesivamente el consumo
     de memoria de la aplicación.
     '''
+    
+    instances = {}
     #field_type_attrs.setdefault(k)
     field_type_attrs = dict(
                         TextField = {'autocomplete': 'off'},
@@ -178,6 +179,7 @@ class CustomModelAdmin(ModelAdmin):
             (r'^autocomplete/(?P<value>.{0,60})/$', self.admin_site.admin_view(self.autocomplete)),
             (r'^json_dump/?$', self.admin_site.admin_view(self.query_dump)),
             (r'^json_dump/(?P<pk>[\d\w\.\s]+)?$', self.admin_site.admin_view(self.json_dump)),
+            (r'^quickview/(?P<pk>[\d\w\.\s]+)?$', self.admin_site.admin_view(self.quickview)),
         )
         return my_urls + urls
     
@@ -261,6 +263,12 @@ class CustomModelAdmin(ModelAdmin):
         except Exception, e:
             return SimpleJsonResponse(success = False, error = unicode(e))
     
+    def quickview(self, request, pk):
+        '''
+        Generar la vista rápida de un objeto
+        '''
+        self.queryset(request).get(pk = pk)
+        return HttpResponse('hola')
     
 
 #===============================================================================

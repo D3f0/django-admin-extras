@@ -2,7 +2,8 @@
 '''
 Widgets para la administración
 '''
-from django.forms.widgets import TextInput, CheckboxInput, Select
+from django.forms.widgets import TextInput, CheckboxInput, Select, DateInput,\
+    MediaDefiningClass
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.utils.encoding import force_unicode
@@ -126,3 +127,131 @@ class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
             output.append(u'<li><label%s>%s %s</label></li>' % (label_for, rendered_cb, option_label))
         output.append(u'</ul>')
         return mark_safe(u'\n'.join(output))
+    
+
+
+#from django.contrib.admin.widgets import AdminDateWidget
+import re
+MEDIA_PATTERN = re.compile('''
+(:?\$\{
+    [\w\d\.\:\[\]\(\)\"\'\,\-\_]+
+\})
+''', re.VERBOSE)
+
+MEDIA_SUBST_PATTERN = re.compile(
+    '''(:?
+        \$\{(?P<value>[\w\.\d]+)
+        (:?(?P<filters>.*))?\}
+        )''',
+    re.VERBOSE | re.MULTILINE
+)
+
+def get_value(s):
+    '''
+    Gets a value from a path, for example settings.ADMIN_MEDIA_PREFIX,
+    it  imports modules and gets values from them 
+    '''
+    dots = s.count('.')
+    if dots == 0:
+        return getattr(settings, s)
+    else:
+        mod_pathname, attr = s.rsplit('.', 1)
+        #print "Modulo, pathname", mod_pathname
+        mod = __import__(mod_pathname, {}, {}, '*')
+        #print "Modulo importado", mod
+        return getattr(mod, attr)
+
+class MediaSubstitutionException(Exception):
+    pass
+
+SUBINDEX = re.compile('\[(?P<index>\d+)\]')
+METHOD = re.compile('(?P<name>[\d\w\_]+)\((?P<args>.*)\)')
+def apply_filters(value, filters):
+    '''
+    Applies a set of filters to a value
+    '''
+    
+    filters = filters.split(':')
+    for filter in filters:
+        subindex_match = SUBINDEX.search(filter)
+        if subindex_match:
+            index = int(subindex_match.group('index'))
+            value = value[index]
+            continue
+        method_match = METHOD.search(filter)
+        if method_match:
+            method_name = method_match.group('name')
+            method_args = method_match.group('args')
+            method = getattr(value, method_name)
+            args = eval(method_args, {})
+            value = method(*args)
+            continue
+        raise MediaSubstitutionException("In %s could not parse %s" % (filters, filter))
+        
+        
+             
+    return value
+
+#TODO: Manage complex subsitutions
+def subst(source):
+    '''
+    Substitute patterns in URLs like
+    ${settings.CONFIG_VALUE:split('-'):[0]}
+    '''
+    dest = ''
+    last_end = 0
+    for ptrn in MEDIA_SUBST_PATTERN.finditer(source):
+        #import ipdb; ipdb.set_trace()
+        dest += source[last_end:ptrn.start()]
+        value_name = ptrn.group('value')
+        filters = ptrn.group('filters') or ''
+        value = get_value(value_name)
+        value = apply_filters(value, filters)
+        print value_name, filters, value
+        dest += value 
+        last_end = ptrn.end()
+        
+    dest += source[last_end:]
+    print "---->", dest
+    return dest
+
+class MediaSubstitutionMetaclass(MediaDefiningClass):
+    "Metaclass for classes that can have media definitions"
+    def __new__(cls, name, bases, attrs):
+        # Get class media
+        Media = attrs.get('Media', None)
+        if Media:
+            Media.js = map(subst, Media.js)
+        new_class = super(MediaSubstitutionMetaclass, cls).__new__(cls, name, bases,
+                                                           attrs)
+        return new_class
+
+
+class DatePickerInputWidget(DateInput):
+    
+    '''
+    jQuery UI datepicker adapter for django widgets
+    '''
+    __metaclass__ = MediaSubstitutionMetaclass
+    class Media:
+        js = (
+              #"../../ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split('-', 0)}.js"
+              '../../ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
+              "js/adminextras/datepicker.js",
+              )
+
+    def __init__(self, attrs={}, format=None):
+        super(DatePickerInputWidget, self).__init__(attrs={'class': 'jquery_datepicker', 
+                                                           'size': '10'}, format=format)
+        
+    def _render(self, name, value, attrs=None):
+        '''
+        
+        '''
+        safe_html = super(DatePickerInputWidget, self).render(name, value, attrs)
+        print self.id_for_label
+        script = '''
+            <script type="text/javascri
+        
+        '''
+        return mark_safe(safe_html + script)    
