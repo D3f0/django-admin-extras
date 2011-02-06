@@ -118,12 +118,17 @@ class CustomModelAdmin(ModelAdmin):
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         field = BaseModelAdmin.formfield_for_dbfield(self, db_field, **kwargs)
-        
+        #import ipdb; ipdb.set_trace()
+        custom_widget = self.admin_site.widget_mapping.get(type(db_field), None)
+        if custom_widget:
+            field.widget = custom_widget()
         # Actualizar los valores
         attrs = CustomModelAdmin.field_type_attrs.get(type(field), {})
         if hasattr(field, 'widget'):
-            field.widget.attrs.update(**attrs)
-        
+            if hasattr(field.widget, 'attrs'):
+                field.widget.attrs.update(**attrs)
+            else:
+                field.widget.attrs = attrs
         return field
     
     @classmethod
@@ -295,11 +300,22 @@ class CustomAdminSite(AdminSite):
     Sitio de administración. Utiliza por defecto la clase CustomAdminSite
     '''
     instances = {}
+    widget_mapping = {}
+    
     def __init__(self, name, *largs, **kwargs):
         super(CustomAdminSite, self).__init__(name, *largs, **kwargs)
         CustomAdminSite.instances[name] = self
         #print self.instances
-        
+    
+    
+    def register_custom_widget(self, db_field_type, widget):
+        '''
+        Sitewide widget override
+        '''
+        assert issubclass(db_field_type, models.Field)
+        assert issubclass(widget, forms.Widget)
+        self.widget_mapping[db_field_type] = widget
+      
     def register(self, model_or_iterable, admin_class=None, **options):
         if not admin_class:
             admin_class = CustomModelAdmin

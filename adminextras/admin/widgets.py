@@ -13,6 +13,7 @@ from django.forms.util import flatatt
 from django.forms.models import ModelChoiceIterator
 from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from itertools import chain
+import simplejson
 
 class AdminAutoCompleteFKInputWidget(TextInput):
     '''
@@ -131,30 +132,63 @@ class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
 
 
 from patsubst import MediaSubstitutionMetaclass
+import re
+#===============================================================================
+# CamelCase to Python fmt 
+#===============================================================================
+decamelize = lambda s: re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z]))', '_', s).lower()
 
 class DatePickerInputWidget(DateInput):
     '''
     jQuery UI datepicker adapter for django widgets
+    
     '''
     __metaclass__ = MediaSubstitutionMetaclass
+    
+    JS_PARAMS = ['disabled','altField','altFormat','appendText','autoSize',
+                 'buttonImage','buttonImageOnly','buttonText','changeMonth',
+                 'changeYear','closeText','constrainInput','currentText','dateFormat',
+                 'dayNames','dayNamesMin','dayNamesShort','defaultDate','duration',
+                 'gotoCurrent','hideIfNoPrevNext','isRTL','maxDate','minDate','monthNames',
+                 'monthNamesShort','navigationAsDateFormat','nextText','numberOfMonths',
+                 'prevText','selectOtherMonths','shortYearCutoff','showAnim',
+                 'showButtonPanel','showCurrentAtPos','showMonthAfterYear','showOn',
+                 'showOptions','showOtherMonths','showWeek','stepMonths','weekHeader',
+                 'yearRange','yearSuffix']
+
+    PARAMS = dict([ (decamelize(n), n) for n in JS_PARAMS ])
+    
     class Media:
         js = (
               'js/jquery-ui/development-bundle/ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
               "js/adminextras/datepicker.js",
               )
 
-    def __init__(self, attrs={}, format=None):
+    def __init__(self, attrs={}, format=None, **opts):
+            
         super(DatePickerInputWidget, self).__init__(attrs={'class': 'jquery_datepicker', 
                                                            'size': '10'}, format=format)
+        self.js_params = self.build_params(opts)
         
-    def _render(self, name, value, attrs=None):
+    def build_params(self, opts):
+        d = {}
+        for name, value in opts.iteritems():
+            if not name in self.PARAMS:
+                c = type(self).__name__
+                msg = "%s does not accept %s as param." % (c, name)
+                if name in self.JS_PARAMS:
+                    msg += " You should use %s instead" % decamelize(name)
+                raise Exception(msg)
+            
+            d[self.PARAMS[name]] = value
+        return simplejson.dumps(d)
+            
+        
+    def render(self, name, value, attrs=None):
         '''
-        
+        Stores options in a hidden input
         '''
         safe_html = super(DatePickerInputWidget, self).render(name, value, attrs)
-        print self.id_for_label
-        script = '''
-            <script type="text/javascri
+        script = "<input type='hidden' id='datepicker_opts_%s' value='%s'>" % (attrs.get('id'), self.js_params)
         
-        '''
         return mark_safe(safe_html + script)    
