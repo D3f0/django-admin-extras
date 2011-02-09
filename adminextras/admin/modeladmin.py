@@ -107,6 +107,8 @@ class CustomModelAdmin(ModelAdmin):
     trabajen con un queryset muy extenso que podría elevar excesivamente el consumo
     de memoria de la aplicación.
     '''
+    add_form_template = 'adminextras/admin/custom_change_form.html'
+    change_form_template = 'adminextras/admin/custom_change_form.html'
     
     instances = {}
     #field_type_attrs.setdefault(k)
@@ -326,30 +328,31 @@ class CustomAdminSite(AdminSite):
                     raise ImproperlyConfigured("El inline no es subclase de CustomTabularInline")
         #=======================================================================
         # Agregar los campos localtime_<nombre_metodo>
+        # Deprecated settings.DATE_INPUT_FORMAT
         #=======================================================================
         
-        if issubclass(model_or_iterable, models.Model):
-            model = model_or_iterable
-            
-            campos_fecha = filter(lambda f: isinstance(f, models.DateField), 
-                              model._meta.fields)
-            for campo in campos_fecha:
-                print "Campo fecha: %s" % campo.name
-                def wrapped(self):
-                    nombre_campo = campo.name
-                    d = getattr(self, nombre_campo)
-                    if not d:
-                        return ''
-                    return d.strftime(FORMATO_FECHA)
-                    
-                
-                wrapped.allow_tags = True
-                wrapped.short_description = campo.verbose_name
-                wrapped.admin_order_field = campo.name
-                
-                nombre_metodo = 'localdate_%s' % campo.name
-                print "nombre del método: %s" % nombre_metodo
-                setattr(model, nombre_metodo, wrapped)
+#        if issubclass(model_or_iterable, models.Model):
+#            model = model_or_iterable
+#            
+#            campos_fecha = filter(lambda f: isinstance(f, models.DateField), 
+#                              model._meta.fields)
+#            for campo in campos_fecha:
+#                #print "Campo fecha: %s" % campo.name
+#                def wrapped(self):
+#                    nombre_campo = campo.name
+#                    d = getattr(self, nombre_campo)
+#                    if not d:
+#                        return ''
+#                    return d.strftime(FORMATO_FECHA)
+#                    
+#                
+#                wrapped.allow_tags = True
+#                wrapped.short_description = campo.verbose_name
+#                wrapped.admin_order_field = campo.name
+#                
+#                nombre_metodo = 'localdate_%s' % campo.name
+#                print "nombre del método: %s" % nombre_metodo
+#                setattr(model, nombre_metodo, wrapped)
                 
         
         return AdminSite.register(self, model_or_iterable, admin_class, **options)

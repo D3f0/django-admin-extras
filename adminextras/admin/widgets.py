@@ -39,7 +39,7 @@ class AdminAutoCompleteFKInputWidget(TextInput):
         
         container = '<span class="autocomplete" url="%s">%s</span>'
         hidden_input = '<input type="hidden" name="%s" value="%s" id="id_%s">' % (name, value or '', name)
-        autocomp_input = '<input type="text" value="%s" onfocus="django.adminautocomp.check(this)" size="52" id="%s">' % (unicode(obj), 'aoutocomplete_'+name)
+        autocomp_input = '<input type="text" value="%s" onfocus="django.adminautocomp.check(this)" size="52" id="%s">' % (unicode(obj), 'autocomplete_'+name)
         #autocomp_input += '<a href="javascript:void(0);" onclick="django.adminautocomp.clear(this)" class="clear_autocomp">Borrar</a>'
         
         if hasattr(self, 'help_text'):
@@ -104,7 +104,7 @@ class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
         '''
         Renderizar el HTML
         '''
-        print "Choices para %s son %s " % (name, list(self.choices))
+        #print "Choices para %s son %s " % (name, list(self.choices))
         if value is None: value = []
         has_id = attrs and 'id' in attrs
         final_attrs = self.build_attrs(attrs, name=name)
