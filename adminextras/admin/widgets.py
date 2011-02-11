@@ -52,10 +52,10 @@ class AdminAutoCompleteFKInputWidget(TextInput):
     class Media:
         # Utiliza jQuery
         js = (
-                'js/adminextras/autocomplete.js',
+                settings.STATIC_URL + 'js/adminextras/autocomplete.js',
              )
         css = {
-               'all': ('css/adminextras/autocomplete.css', )
+               'all': (settings.STATIC_URL + 'css/adminextras/autocomplete.css', )
                
         }
         
@@ -160,8 +160,8 @@ class DatePickerInputWidget(DateInput):
     
     class Media:
         js = (
-              'js/jquery-ui/development-bundle/ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
-              "js/adminextras/datepicker.js",
+              settings.STATIC_URL + 'js/jquery-ui/development-bundle/ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
+              settings.STATIC_URL + 'js/adminextras/datepicker.js',
               )
 
     def __init__(self, attrs={}, format=None, **opts):
