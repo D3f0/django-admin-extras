@@ -14,6 +14,7 @@ from django.forms.models import ModelChoiceIterator
 from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from itertools import chain
 import simplejson
+from django.conf import settings
 
 class AdminAutoCompleteFKInputWidget(TextInput):
     '''
@@ -168,6 +169,7 @@ class DatePickerInputWidget(DateInput):
             
         super(DatePickerInputWidget, self).__init__(attrs={'class': 'jquery_datepicker', 
                                                            'size': '10'}, format=format)
+        opts.setdefault('button_image', settings.STATIC_URL + 'img/adminextras/famfamfam/calendar_view_month.png')
         self.js_params = self.build_params(opts)
         
     def build_params(self, opts):
@@ -183,12 +185,16 @@ class DatePickerInputWidget(DateInput):
             d[self.PARAMS[name]] = value
         return simplejson.dumps(d)
             
-        
+    # TODO: Utilizar get_format('DATE_INPUTS_FORMATS')[0] en js/adminextras/datepicker.js
     def render(self, name, value, attrs=None):
         '''
         Stores options in a hidden input
         '''
-        safe_html = super(DatePickerInputWidget, self).render(name, value, attrs)
-        script = "<input type='hidden' id='datepicker_opts_%s' value='%s'>" % (attrs.get('id'), self.js_params)
+        original_html = super(DatePickerInputWidget, self).render(name, value, attrs)
+        new_html = """<span class="datepicker">
+            %s
+            <a href="" onclick="return django.admindatepicker.today(this);">&nbsp;&laquo;<b>Hoy</b></a>
+            <input type='hidden' id='datepicker_opts_%s' value='%s'>
+        </span>""" % (original_html, attrs.get('id'), self.js_params)
         
-        return mark_safe(safe_html + script)    
+        return mark_safe( new_html )    
