@@ -16,7 +16,7 @@ class Command(BaseCommand):
                    make_option('-U', '--user',
                                default = 'postgres', help = "Username"
                                ),
-                   make_option('-P', '--passwd',
+                   make_option('--passwd',
                                default = 'postgres', help = "Password"
                                ),
                    make_option('-n', '--name',
