@@ -39,5 +39,6 @@ class Command(BaseCommand):
         try:
             from pyscopg2 import tests
         except ImportError, e:
+            import traceback; print(traceback.format_exc())
             raise CommandError("Iport Error, " + str(e))
         
