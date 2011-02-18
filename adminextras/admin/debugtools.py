@@ -1,4 +1,4 @@
-# coding: utf-8
+# encoding: utf-8
 '''
 Created on 17/02/2011
 
@@ -7,7 +7,7 @@ Created on 17/02/2011
 
 from django.conf import settings
 import time
-from atom.http_core import HttpRequest
+from django.http import HttpRequest
 
 DEBUG_ENABLED = hasattr(settings, 'DEBUG') and settings.DEBUG #and\
                 #hasattr(settings, 'HOSTS_DESARROLLO') and 
@@ -20,8 +20,9 @@ import sys
 
 
 def sanitize_arg_repr(arg):
+    
     if isinstance(arg, HttpRequest):
-        return object.__str__(arg)
+        return '<%s object at %x>' % (type(arg).__name__, hash(arg))
     return unicode(arg)
         
 
@@ -29,7 +30,7 @@ class DebugDecorator(object):
     '''
     A callable for debuging purposes
     '''
-    def __init__(self, debug_func = lambda s: sys.stdout.write(s), timeit = False):
+    def __init__(self, debug_func = lambda s: sys.stdout.write(s + '\n'), timeit = False):
         self.timeit = timeit
         self.time0 = None
         self.time1 = None
@@ -40,7 +41,7 @@ class DebugDecorator(object):
         def wrapped(*largs, **kwargs):
             if self.timeit:
                 self.time0 = time.time()  
-            retval = func(largs, kwargs)
+            retval = func(*largs, **kwargs)
             if self.timeit:
                 self.time1 = time.time()
                 self.total_time = self.time1 - self.time0
@@ -50,33 +51,44 @@ class DebugDecorator(object):
         return wrapped
     
     def build_string(self, func, largs, kwargs):
-        s = ("La función %s "
-             " con los argumentos %s %s"
-             "%s.") % (func, largs, kwargs, self.build_time())
+        # Crear una representación agradable de la cadena
+        largs_s = ', '.join(map(sanitize_arg_repr, largs))
+        kwargs_s = ', '.join(['%s = %s' % (k, sanitize_arg_repr(v)) 
+                              for k, v in kwargs.iteritems()])
+        if hasattr(func, 'func_name'):
+            func_s = func.func_name
+        elif hasattr(func, 'im_func'):
+            func_s = func.im_func.func_name
+        else:
+            func_s =  repr(func)
+            
+        s = (u"La funcion %s" 
+             "con los argumentos %s %s"
+             "%s.") % (func_s, largs_s, kwargs_s, self.build_time())
+        s = s.replace('\n', '').encode('utf-8')
         return s
     
     def build_time(self):
         if  not self.timeit:
             return ''
-        return ' tomó %.5f segundos' % self.total_time
+        return u' tomó %.5f segundos' % self.total_time
     
-def debugargs(func):
-    '''
-    Decorador para imprimir los argumentos con los que se ejecuta una función
-    '''
-    def wrapped(*largs, **kwargs):
-        print "Ejecutando %s con argumentos %s %s" % (func, largs, kwargs)
-        result = func(*largs, **kwargs)
-        return result
-    return wrapped
+debugargs = DebugDecorator(timeit=False)
 
 debugargs_and_time = DebugDecorator(timeit=True)
 
 if __name__ == "__main__":
-    @debugargs_and_time
+    @debugargs
     def x(a, b = None, c = 'coquinio'):
         time.sleep(0.4)
         print a, b, c
         return a, b, c
-    x()
+    x(1)
+    @debugargs_and_time
+    def y(a, b = None, c = 'coquinio'):
+        time.sleep(0.4)
+        print a, b, c
+        return a, b, c
+    y('foo')
+    
     
