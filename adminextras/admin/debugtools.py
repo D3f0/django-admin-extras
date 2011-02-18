@@ -64,7 +64,7 @@ class DebugDecorator(object):
             
         s = (u"La funcion %s" 
              "con los argumentos %s %s"
-             "%s.") % (func_s, largs_s, kwargs_s, self.build_time())
+             "%s") % (func_s, largs_s, kwargs_s, self.build_time())
         s = s.replace('\n', '').encode('utf-8')
         return s
     
