@@ -39,18 +39,30 @@ adminextras.autocomplete = (function (){
                     method: "GET",
                     success: function(xhr){
                         response(xhr.data);
+						//console.log(xhr.data);
                     },
                     error: function(){
-                    	console.log("Error de autocompletado");
-                        //alert("Error en autocompletado");
+                    	console.error("Error de autocompletado");
                     }
                 });
             },
             select: function(event, sel){
                 var selection = sel.item;
-                //console.log(selection, selection.value,"=", selection.label);
-                $(hidden).attr('value', selection.pk);
-                $(input).attr('value', selection.label);
+				
+				if (selection.pk) {
+					//console.log(selection, selection.value,"=", selection.label);
+					$(hidden).attr('value', selection.pk);
+					$(input).attr('value', selection.label);
+				} else {
+					// Sin resultados
+					
+					$(hidden).attr('value', '');
+					$(input).attr('value', '');
+					$(this).attr('value', '');
+					event.cancel();
+					console.info("Sin resultados");
+					return false;
+				}
             }
         }).bind({
 			'keydown': function (evt){

@@ -230,21 +230,33 @@ class CustomModelAdmin(ModelAdmin):
         '''
         Vista que devuelve la autocompleción
         '''
+        #import time; time.sleep(2) # Simular el dealy
+        log = {}
         data = []
         qs = self.queryset(request)
         query = self._build_autocomplete_query(value)
         #print "La query es ", query
         qs = qs.filter(query)
         qs = qs[:self.autocomplete_hits]
-        cant = qs.count()
-        for obj in qs:
-            data.append({'value': unicode(obj), 'label': unicode(obj), 'pk': obj.pk})
-            for attr_name in self.autocomplete_extra_values:
-                f = getattr(obj, attr_name, '')
-                if callable(f):
-                    f = f()
-                data.append({attr_name: f})
-        return SimpleJsonResponse(success = True, data = data, cant = cant)
+        try:
+            cant = qs.count()
+        except Exception, e:
+            cant = -1 # Error
+            if settings.DEBUG:
+                log = {'error': unicode(e)}
+        else:
+            for obj in qs:
+                data.append({'value': unicode(obj), 'label': unicode(obj), 'pk': obj.pk})
+                for attr_name in self.autocomplete_extra_values:
+                    f = getattr(obj, attr_name, '')
+                    if callable(f):
+                        f = f()
+                    data.append({attr_name: f})
+        finally:
+            if cant < 1:
+                data = [{'value': 'Sin resultados', 'label': 'Sin resultados', 'pk': ''}]
+                cant = 0
+        return SimpleJsonResponse(success = True, data = data, cant = cant, log = log)
     
     def json_dump(self, request, pk = None ):
         if pk:

@@ -1,7 +1,15 @@
 ul.ui-autocomplete li {
 	list-style: none;
 }
-
+._ui-autocomplete-input {
+	background-image: url(../../img/adminextras/ajax/autocomp_loading.gif);
+}
+.ui-autocomplete-loading {
+	background-image: url(../../img/adminextras/ajax/autocomp_loading.gif);
+	background-position: right center;
+	background-repeat: no-repeat;
+	/*background-color: #eee;*/
+}
 .autocomplete-info {
 	height: 1em;
 	background: red;
