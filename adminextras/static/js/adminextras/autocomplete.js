@@ -38,10 +38,12 @@ adminextras.autocomplete = (function (){
                     url: autocomplete_url + request.term + '/',
                     method: "GET",
                     success: function(xhr){
+						$(this).removeClass('ui-autocomplete-loading');
                         response(xhr.data);
 						//console.log(xhr.data);
                     },
                     error: function(){
+						$(this).removeClass('ui-autocomplete-loading');
                     	console.error("Error de autocompletado");
                     }
                 });
@@ -53,6 +55,7 @@ adminextras.autocomplete = (function (){
 					//console.log(selection, selection.value,"=", selection.label);
 					$(hidden).attr('value', selection.pk);
 					$(input).attr('value', selection.label);
+					
 				} else {
 					// Sin resultados
 					
@@ -63,6 +66,7 @@ adminextras.autocomplete = (function (){
 					console.info("Sin resultados");
 					return false;
 				}
+				
             }
         }).bind({
 			'keydown': function (evt){
