@@ -30,13 +30,14 @@ from django.utils.encoding import smart_unicode, force_unicode
 from django.template import Template
 from django.template.context import Context
 from django.http import HttpResponse
+from adminextras.admin.debugtools import debugargs
 
 FORMATO_FECHA = settings.DATE_INPUT_FORMATS[0]
 from django.core import urlresolvers
 
 from widgets import *
 
-
+@debugargs
 def override_foreignkeys(model_admin, db_field, request=None, **kwargs):
     '''
     Genera los widgets personalizados agregando información extra. Es 
@@ -356,6 +357,9 @@ class CustomAdminSite(AdminSite):
                 
         
         return AdminSite.register(self, model_or_iterable, admin_class, **options)
+    
+    
+    
     
     # ------------------------------------------------------------------------
     # Definiciones para un menú lateral

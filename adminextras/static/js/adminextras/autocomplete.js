@@ -5,7 +5,12 @@
  * 
  * Importante. Este plugin se activa cuando el autcompletado gana foco.
  */
-django.adminautocomp = (function (){
+if (typeof(adminextras) == 'undefined') {
+	adminextras = {};
+	console.log("Creando ns");
+}
+adminextras.autocomplete = (function (){
+	console.info("Cargando autcompleción");
 	// Referencia estática al autocompletado en curso
 	var autocomplete_inputs = [];
 	/**
@@ -98,4 +103,4 @@ django.adminautocomp = (function (){
 		autocomplete_inputs: autocomplete_inputs
 		
 	}
-})(jQuery);
+})();

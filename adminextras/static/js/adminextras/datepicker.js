@@ -1,7 +1,10 @@
 /**
  * Creates a datepicker for a input
  */
-django.admindatepicker = (function (){
+if (typeof(adminextras) == 'undefined') {
+	adminextras = {};
+}
+adminextras.datepicker = (function (){
 	var datepickers = [];
 		
 	function retrieve_options(input) {

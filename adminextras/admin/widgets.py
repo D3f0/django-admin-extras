@@ -3,7 +3,7 @@
 Widgets para la administración
 '''
 from django.forms.widgets import TextInput, CheckboxInput, Select, DateInput,\
-    MediaDefiningClass
+    MediaDefiningClass, Widget, Media
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.utils.encoding import force_unicode
@@ -15,6 +15,10 @@ from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from itertools import chain
 import simplejson
 from django.conf import settings
+
+
+USE_COMPRESSED_JQUERY_UI = hasattr(settings, 'USE_COMPRESSED_JQUERY_UI') and settings.USE_COMPRESSED_JQUERY_UI
+USE_SPARSE_UI = not USE_COMPRESSED_JQUERY_UI
 
 class AdminAutoCompleteFKInputWidget(TextInput):
     '''
@@ -40,8 +44,8 @@ class AdminAutoCompleteFKInputWidget(TextInput):
         
         container = '<span class="autocomplete" url="%s">%s</span>'
         hidden_input = '<input type="hidden" name="%s" value="%s" id="id_%s">' % (name, value or '', name)
-        autocomp_input = '<input type="text" value="%s" onfocus="django.adminautocomp.check(this)" size="52" id="%s">' % (unicode(obj), 'autocomplete_'+name)
-        #autocomp_input += '<a href="javascript:void(0);" onclick="django.adminautocomp.clear(this)" class="clear_autocomp">Borrar</a>'
+        autocomp_input = '<input type="text" value="%s" onfocus="adminextras.autocomplete.check(this)" size="52" id="%s">' % (unicode(obj), 'autocomplete_'+name)
+        #autocomp_input += '<a href="javascript:void(0);" onclick="adminautocomp.clear(this)" class="clear_autocomp">Borrar</a>'
         
         if hasattr(self, 'help_text'):
             help_text = "<p class='helptext'>%s</p>" % self.help_text
@@ -53,11 +57,22 @@ class AdminAutoCompleteFKInputWidget(TextInput):
     class Media:
         # Utiliza jQuery
         js = (
-                settings.STATIC_URL + 'js/adminextras/autocomplete.js',
-             )
+                # Base para todos los widgets
+                settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",) +\
+                (USE_SPARSE_UI and (            
+                settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js",
+                settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js",
+                settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.position.js",
+                settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.autocomplete.js",
+                ) or (
+                settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js',
+                )) + (
+                settings.STATIC_URL + "js/adminextras/autocomplete.js",
+                )
+             
         css = {
-               'all': (settings.STATIC_URL + 'css/adminextras/autocomplete.css', )
-               
+               'all': (settings.STATIC_URL + 'css/adminextras/autocomplete.css', 
+                       settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css')
         }
         
 
@@ -161,6 +176,14 @@ class DatePickerInputWidget(DateInput):
     
     class Media:
         js = (
+              settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",) + (
+              USE_SPARSE_UI and (
+              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
+              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js", 
+              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.datepicker.js",
+              ) or (
+              settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js',
+              )) + (
               settings.STATIC_URL + 'js/jquery-ui/development-bundle/ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
               settings.STATIC_URL + 'js/adminextras/datepicker.js',
               )
@@ -193,8 +216,70 @@ class DatePickerInputWidget(DateInput):
         original_html = super(DatePickerInputWidget, self).render(name, value, attrs)
         new_html = """<span class="datepicker">
             %s
-            <a href="" onclick="return django.admindatepicker.today(this);">&nbsp;&laquo;<b>Hoy</b></a>
+            <a href="" onclick="return admindatepicker.today(this);">&nbsp;&laquo;<b>Hoy</b></a>
             <input type='hidden' id='datepicker_opts_%s' value='%s'>
         </span>""" % (original_html, attrs.get('id'), self.js_params)
         
         return mark_safe( new_html )    
+
+
+make_label = lambda s: (' '.join(s.split('_'))).title()
+
+class ButtonWidget(Widget):
+    '''
+    jQuery button widget
+    '''
+    input_type = 'button'
+    
+    def __init__(self, onclick = None, label = None, *largs, **kwargs):
+        super(ButtonWidget, self).__init__(*largs, **kwargs)
+        self.js_onclick = onclick
+        self.js_label = label
+        
+    def render(self, name, value, attrs={}):
+        
+        if not attrs.has_key('class'):
+            attrs['class'] = 'form_button'
+        attrs['button_params'] = simplejson.dumps({'onclick': self.js_onclick,
+                                                   'label': self.js_label or make_label(name)}) 
+        final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
+        id = final_attrs['id']
+        html = mark_safe(u'<input%s />' % flatatt(final_attrs))
+        #print html
+        return html
+    
+    class Media:
+        js = (USE_SPARSE_UI and (
+              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
+              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js",
+              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.button.js",
+              ) or (
+              settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js',
+              )) + (
+              settings.STATIC_URL + "js/adminextras/button.js", 
+              )
+        css = {
+            'all': ( ),
+        }
+
+class DialogMedia(Media):
+    ''' Medios para el diálgo de jQuery '''
+    js =  (
+          settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",
+          ) + (USE_SPARSE_UI and (
+          settings.STATIC_URL + "js/jquery-ui/development-bundle//external/jquery.bgiframe-2.1.2.js",
+          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
+          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js", 
+          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.mouse.js", 
+          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.draggable.js", 
+          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.position.js", 
+          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.resizable.js", 
+          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.dialog.js",
+          ) or (
+          settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js',
+          ))
+    css = {
+           'all': (
+                   settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
+                   )
+           }
