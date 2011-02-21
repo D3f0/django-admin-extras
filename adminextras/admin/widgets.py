@@ -216,7 +216,7 @@ class DatePickerInputWidget(DateInput):
         original_html = super(DatePickerInputWidget, self).render(name, value, attrs)
         new_html = """<span class="datepicker">
             %s
-            <a href="" onclick="return admindatepicker.today(this);">&nbsp;&laquo;<b>Hoy</b></a>
+            <a href="" onclick="return adminextras.datepicker.today(this);">&nbsp;&laquo;<b>Hoy</b></a>
             <input type='hidden' id='datepicker_opts_%s' value='%s'>
         </span>""" % (original_html, attrs.get('id'), self.js_params)
         

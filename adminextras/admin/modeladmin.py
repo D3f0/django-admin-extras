@@ -120,11 +120,17 @@ class CustomModelAdmin(ModelAdmin):
     )
 
     def formfield_for_dbfield(self, db_field, **kwargs):
-        field = BaseModelAdmin.formfield_for_dbfield(self, db_field, **kwargs)
-        #import ipdb; ipdb.set_trace()
         custom_widget = self.admin_site.widget_mapping.get(type(db_field), None)
+        
+        
+        field = BaseModelAdmin.formfield_for_dbfield(self, db_field, **kwargs)
         if custom_widget:
-            field.widget = custom_widget()
+            widget = custom_widget()
+            field.widget =  widget
+        #if type(db_field) == models.DateField:
+        #    import ipdb; ipdb.set_trace()
+            
+        
         # Actualizar los valores
         attrs = CustomModelAdmin.field_type_attrs.get(type(field), {})
         if hasattr(field, 'widget'):
@@ -327,39 +333,7 @@ class CustomAdminSite(AdminSite):
             for inline in admin_class.inlines:
                 if not issubclass(inline, (CustomTabularInline, )):
                     raise ImproperlyConfigured("El inline no es subclase de CustomTabularInline")
-        #=======================================================================
-        # Agregar los campos localtime_<nombre_metodo>
-        # Deprecated settings.DATE_INPUT_FORMAT
-        #=======================================================================
-        
-#        if issubclass(model_or_iterable, models.Model):
-#            model = model_or_iterable
-#            
-#            campos_fecha = filter(lambda f: isinstance(f, models.DateField), 
-#                              model._meta.fields)
-#            for campo in campos_fecha:
-#                #print "Campo fecha: %s" % campo.name
-#                def wrapped(self):
-#                    nombre_campo = campo.name
-#                    d = getattr(self, nombre_campo)
-#                    if not d:
-#                        return ''
-#                    return d.strftime(FORMATO_FECHA)
-#                    
-#                
-#                wrapped.allow_tags = True
-#                wrapped.short_description = campo.verbose_name
-#                wrapped.admin_order_field = campo.name
-#                
-#                nombre_metodo = 'localdate_%s' % campo.name
-#                print "nombre del método: %s" % nombre_metodo
-#                setattr(model, nombre_metodo, wrapped)
-                
-        
         return AdminSite.register(self, model_or_iterable, admin_class, **options)
-    
-    
-    
     
     # ------------------------------------------------------------------------
     # Definiciones para un menú lateral
