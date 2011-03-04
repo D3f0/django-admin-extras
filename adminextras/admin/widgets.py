@@ -187,6 +187,9 @@ class DatePickerInputWidget(DateInput):
               settings.STATIC_URL + 'js/jquery-ui/development-bundle/ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
               settings.STATIC_URL + 'js/adminextras/datepicker.js',
               )
+        css = {
+               'all': (settings.STATIC_URL + 'css/adminextras/calendar.css',)
+               }
 
     def __init__(self, attrs={}, format=None, **opts):
             
