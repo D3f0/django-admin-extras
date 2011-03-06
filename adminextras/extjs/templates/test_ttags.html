@@ -1,0 +1,88 @@
+{% extends "index.html" %}
+
+{% load extjs %}
+
+{% block extraheaders %}
+    <style type="text/css">
+    	/*
+.source
+*/      PRE {
+    		padding: 3px;
+    		font-size: 12px;
+			border: 1px solid #ccc;
+			background: #FFF1B0;
+			color: #333;
+			border-bottom-color: #333;
+            border-bottom-width: 2px;
+			margin-bottom: 2px;
+    	}
+		H1 {
+			font-size: 22px;
+			padding: 4px;
+			text-align: center;
+			font-weight: bolder;
+		}
+		H2 {
+
+            font-size: 14px;
+            padding: 4px;
+            background: #FFFD53;
+			border: 1px solid #777;
+			
+		}
+		
+    </style>
+{% endblock %}
+
+{% block content %}
+<div>
+	<h1>Pruebas de Tempalte Tags y Scripts</h1>
+	<h2>resource_fields "dfuelerp.apps.api.handlers.ProductoHandler</h2>
+	<pre class="source">
+{% resource_fields "dfuelerp.apps.api.handlers.ProductoHandler" %}		
+	</pre>
+	<h2>Pruebas de Merge de Campos</h2>
+	<pre id="mergefields_demo">
+		
+
+	</pre>
+</div>
+{% endblock %}
+{% block mainscript %}
+<script type="text/javascript">
+    (function(){
+            var ns = Ext.ns('Ext.Test');
+			ns.makeItFancy = function (str){
+				str = str.replace(/\}\,/g, '},\n');
+                str = str.replace(/\"\,/g, '},\n');
+				return str;
+			}
+            ns.elem = Ext.getDom('mergefields_demo');
+            console.log(ns.elem);
+			var fn = null;
+            ns.valores = {% resource_fields "dfuelerp.apps.api.handlers.ProductoHandler" %};
+			if (Ext.isGeko3){
+				fn = function (e) {return e.toSource()};
+			} else {
+			    if (Ext.isChrome){
+				    fn = function (e) {return JSON.stringify(e)};	
+				} else {
+				    console.log("Navaegador no reconocido!");	
+				}
+			}
+			
+			ns.elem.innerHTML = ns.makeItFancy(fn(ns.valores));
+			
+            ns.result = Ext.ux.ModelList.mergeFields('name', {
+                codigo: {size: 400}
+            }, ns.valores);
+            ns.elem.innerHTML += '\n\n' + ns.makeItFancy(fn(ns.result));
+
+
+    })();
+	
+	
+</script>
+{% endblock %}        	
+
+        

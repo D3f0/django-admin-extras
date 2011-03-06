@@ -1,0 +1,16 @@
+{# Personalizar la forma en la que se renderizan los formularios asincrónicos #}
+<form method="POST" class="django_form" onsubmit="return false">
+	{% for field in form %}
+	   <p>
+	   	   {% if field.errors %}
+		   {{ field.errors }}
+		   {% endif %}
+	   	   <label for="id_{{ field.name }}" class="{%if field.required %}required{%endif%}">{{ field.label }}</label>
+           {{ field }}<br/>
+		   {% if field.help_text %}
+		   <span class="help_text">{{ field.help_text }}</span>
+		   {% endif %}	
+	   </p>
+	{% endfor %}
+	
+</form>
