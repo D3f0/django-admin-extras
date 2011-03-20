@@ -25,11 +25,18 @@ class ExtGridHandlerMetaClass(HandlerMetaClass):
         model = attrs.get('model')
         if model:
             pk_name = model._meta.pk.name
+            #excludes = attrs.get('excludes', [])
+            #if not 'fields' in attrs:
+                #print "no tiene fields %s" % name
+            #fields = filter( lambda f: f not in excludes, attrs.get('fields', []))
+            #print "*" * 40
+            #print fields
+            #print "*" * 40
             fields = attrs.get('fields')
             if fields and not pk_name in fields:
                 fields = fields + (pk_name, )
                 attrs['fields'] = fields
-            
+            print "%s [%s]" % (name, attrs.get('fields', None))
         new_cls = type.__new__(cls, name, bases, attrs)
 #        if hasattr(new_cls, 'model'):
 #            typemapper[new_cls] = (new_cls.model, new_cls.is_anonymous)
@@ -41,7 +48,13 @@ class ExtGridHandler(BaseHandler):
     Clase base para conectividad con extjs, define simplemente alugnas cuestiones
     vinculadas con los campos que se pasan al template tag extjs.resource_fields.
     En field_attrs se definen los campos extras que se quieran pasar a los atributos.
+    Campos:
+        - fields
+        - form
+        - formset
+        - exclude
     '''
+    
     __metaclass__ = ExtGridHandlerMetaClass
     exclude = ()
     # Para el formulario
@@ -155,85 +168,3 @@ class ExtGridHandler(BaseHandler):
         #return BaseHandler.delete(self, request, *args, **kwargs)
         
         
-#===============================================================================
-# Old non generic code left for examples
-#===============================================================================
-#    
-#class ProductoHandler(ExtGridHandler):
-#    model = Producto
-#    form = ProductoForm
-#    fields = ('codigo', 'descripcion', 'costo', 'fecha_ultima_compra', )
-#    
-#class ClienteHandler(ExtGridHandler):
-#    form = ClienteForm
-#    fields = ('codigo', 'razon_social', 'cuit', ('localidad', ('nombre', )), 
-#              ('zona', ('nombre',)))
-#    model = Cliente
-#    #form = Cliente
-#    
-#class ProvinciaHandler(ExtGridHandler):
-#    form = ProvinciaForm
-#    fields = ('nombre', 'ciudades_count')
-#    model = Provincia
-#    form = ProvinciaForm
-#    
-#class CiudadHandler(ExtGridHandler):
-#    fields = ('nombre', 'codigo_postal', ('provincia', ('nombre',)))
-#    model = Ciudad
-#    form = CiudadForm
-#
-#class ChequeHandler(ExtGridHandler):
-#    model = Cheque
-#    allowed_methods = ('GET')
-#    #form = Cheq
-#    
-#class FacturaHandler(ExtGridHandler):
-#    form = FacturaClienteForm
-#    #formset = ItemFacturaClienteFormFormSet
-#    model = FacturaCliente
-#    fields = ('numero', ('cliente', ('razon_social',)), 'fecha', 'monto', 'pagada')
-#    
-#class ReciboHandler(ExtGridHandler):        
-#    form = ReciboForm
-#    model = Recibo
-#
-## Movimientos de stock
-#class IngresoHandler(ExtGridHandler):
-#    form = IngresoForm
-#    fields = ('fecha', 'comprobante', ('origen', ('razon_social', )), ('destino', ('nombre',)), 
-#              'cant_items')
-#    
-#    model = Ingreso
-#
-#class MovimientoHandler(ExtGridHandler):
-#    form = MovimientoForm
-#    fields = ('fecha', 'comprobante_str', 'comprobante', ('origen', ('nombre', )),
-#              ('destino', ('nombre', )))
-#    model = Movimiento
-#
-#class ProveedorHandler(ExtGridHandler):
-#    # TODO: Check name
-#    form = ProveedorForm
-#    fields = ('codigo', 'razon_social', 'cuit', ('localidad', ('nombre', )))
-#    model = Proveedor
-#    
-#class SalidaHandler(ExtGridHandler):
-#    form = SalidaForm
-#    model = Salida
-#    
-## Stock por depósito
-#
-#class StockProductoHandler(ExtGridHandler):
-#    model = StockProducto
-#    fields = ('cantidad', ('deposito', ('nombre', )), ('producto', ('codigo', 'descripcion')))
-#    
-#class ZonaClienteHandler(ExtGridHandler):
-#    model = ZonaCliente
-#    form = ZonaClienteForm
-#    fields = ('nombre', 'clientes_count',)
-#
-#
-#class DepositoHandler(ExtGridHandler):
-#    model = Deposito
-#    form = DepositoFrom
-#    fields = ('codigo', 'descripcion', )

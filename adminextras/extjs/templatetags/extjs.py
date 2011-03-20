@@ -60,7 +60,7 @@ def get_field_header(model_class, field_name):
                 header = getattr(field, 'header', None)
                 if header:
                     return header
-            return titlecase.titlecase(field_name.replace('_', ' '))
+            return field_name.replace('_', ' ').title()
 
 def flatten_fields(f, current_model = None):
     '''
@@ -147,7 +147,7 @@ def get_handler(handler_name):
         # Emulamos el from
         #from pprint import pprint
         #pprint(locals())
-        module = __import__(import_path, fromlist = [class_name])
+        module = __import__(import_path, fromlist = [str(class_name)])
         handler = getattr(module, class_name)
         if enforce_base:
             assert issubclass(handler, enforce_base)
@@ -268,3 +268,90 @@ def form_config(handler_name):
     
     return inner_json(config)
 
+#===============================================================================
+# Ext 4 support code
+#===============================================================================
+
+def split_lines(func):
+    '''
+    Improves  readability of generated template code
+    '''
+    def wrapped(*largs, **kwargs):
+        retval = func(*largs, **kwargs)
+        return mark_safe(retval.replace(', ', ',\n'))
+    return wrapped
+
+from django.db import models
+DJANGO_ORM_EXTJS_TYPES = {
+    models.AutoField: 'int',
+    models.CharField: 'string',
+    models.TextField: 'string',
+    models.IntegerField: 'int',
+    models.FloatField: 'float',
+    models.ForeignKey: 'string',
+}
+
+
+def get_extjs_type(field):
+    try:
+        return DJANGO_ORM_EXTJS_TYPES[type(field)]
+    except KeyError:
+        raise Exception("%s is not supported. Add it to %s" % (field, __file__))
+
+def get_handler_fields(handler_name):
+    handler = get_handler(handler_name)
+    model = handler.model
+    
+    fields = []
+    for f in model._meta.fields:
+        fields.append({
+                       'name': f.name,
+                       'type': get_extjs_type(f)
+                       })
+    return fields
+@register.simple_tag
+def handler_fields(handler_name):
+    ''' Handler fields for Ext.regModel '''
+    return simplejson.dumps(get_handler_fields(handler_name))
+
+
+def get_handler_headers(handler_name):
+    handler = get_handler(handler_name)
+    model = handler.model
+    fields = []
+    for f in model._meta.fields:
+        name = f.name
+        fields.append({
+                       'dataIndex': name,
+                       'text': get_field_header(model, name)
+                       })
+    return fields
+
+@register.simple_tag
+def handler_headers(handler_name):
+    return simplejson.dumps(get_handler_headers(handler_name)) 
+
+
+@register.simple_tag
+def handler_gird_config(handler_name, model_name):
+    
+    handler = get_handler(handler_name)
+    model = handler.model
+    cfg = {
+           'headers': get_handler_headers(handler_name),
+           'store': {
+                     'model': model_name,
+                     'proxy': {
+                               'type': 'ajax',
+                               'url': '/api/%s/' % model._meta.module_name,
+                               'reader': {
+                                          'type': 'json',
+                                          'root': 'data',
+                                          }
+                      },
+                      'autoload': True
+            },
+            
+    }
+    return mark_safe(simplejson.dumps(cfg).replace(', ', ',\n\t'))
+    
