@@ -9,6 +9,7 @@ from django.db import connection
 from django.conf import settings 
 import re
 from optparse import make_option
+from django.db.models.loading import get_apps, get_models
 
 class Command(BaseCommand):
     '''
@@ -24,6 +25,10 @@ class Command(BaseCommand):
             dest='simulate',
             default=False,
             help='Simula la eliminacion'),
+        make_option('-m', '--use-models', 
+                    action = 'store_true',
+                    default = False,
+                    help = "Usa los modelos y sus relaciones para generar el orden")
         )
     
     keep = [ re.compile(exp) for exp in (r'auth_user', r'auth_session') ]
@@ -37,11 +42,22 @@ class Command(BaseCommand):
         elif settings.DATABASES:
             db_settings = settings.DATABASES.get('default')
             self.cascade = db_settings.get('ENGINE').find('postgresql') >= 0
-                
+    
+    def get_models(self, *model_names):
+        models = []
+        for app in get_apps():
+            for model in get_models(app):
+                models.append(model)
+        
+    
     def handle(self, *tables,  **options):
+        if options.get('use_models'):
+            self.get_models(tables)
         self.cursor = connection.cursor()
         current_tables = connection.introspection.table_names()
         dropable_tables = filter(lambda t: self.needs_drop(t), current_tables)
+        
+        
         
         
         if tables:
