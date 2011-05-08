@@ -2,5 +2,25 @@
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/adminextras/overrideRleatedLookups.js"></script>
+<script type="text/javascript">
+	{% if read_only_form %}
+	   django.jQuery(document).ready(function (){
+	   	    var $ = django.jQuery; // Alias
+		    $('.form-row input, .form-row select, .form-row').attr('disabled', 'disabled');
+		    // Agregar el cancelar
+		    $('.submit-row input[type=submit]').after('<input id="cancel_edit" type="button" value="Cancelar">');
+		    $('.submit-row input[type=submit]').remove();
+		    $('.form-row .add-another').remove();
+		    $('.form-row .datepicker a b').remove();
+		    $('#cancel_edit').click(function (){
+		        // console.log("No funciona!");
+		        window.history.back();
+		    });
+			django.view_only = true;
+	   });
+	{% else %}
+	   django.view_only = false;
+	{% endif %}
+</script>
 {% endblock %}
 
