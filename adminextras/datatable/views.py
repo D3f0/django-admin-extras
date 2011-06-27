@@ -17,20 +17,24 @@ class InvalidColumn(DataTableArgumentsException):
 class InvalidModel(DataTableArgumentsException):
     pass
 
+class ResourceNotFound(DataTableArgumentsException):
+    pass
 
-def _get_datatable_queryset(sModel):
+def _get_datatable_queryset(sResource):
     '''
     Gets the reousrce the datatable wants to list
     It could be a model or an admin class
     @return: A queryset
     '''
     # TODO: Get the queryset from an admin instance
-    if not sModel:
-        raise InvalidModel(u"El campo sModel del request está vacío")
+    if not sResource:
+        raise InvalidModel(u"Missing sResource argument.")
     
-    app_name, model_name = sModel.split('.')
+    app_name, model_name = sResource.split('.')
     model = get_model(app_name, model_name)
-    
+    if not model:
+        raise ResourceNotFound("%s did not match any resource" % sResource)
+    #import ipdb; ipdb.set_trace()
     # Defaul manager
     return model.objects
 
@@ -227,7 +231,7 @@ def jq_datatable(request, queryset = None):
         
         if not queryset:
             # Get queryset
-            resource = _get_datatable_queryset(dt_request.sModel)
+            resource = _get_datatable_queryset(dt_request.sResource)
         elif isinstance(object, models.query.QuerySet):
             resource = queryset
     
