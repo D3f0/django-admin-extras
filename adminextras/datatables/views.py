@@ -7,6 +7,10 @@ import datetime
 import simplejson
 from django.http import HttpResponse
 import traceback
+from django.utils.encoding import smart_unicode
+from django.template.loader import render_to_string
+from django.template.context import RequestContext
+from django.utils.safestring import mark_safe
 
 class DataTableArgumentsException(Exception):
     pass
@@ -68,7 +72,7 @@ def attribute_getter(instance, name):
             return data.strftime(DATE_FORMAT)
         elif isinstance(data, (models.Model, )):
             #return [data.pk, unicode(data)]
-            return unicode(data)
+            return data
         elif callable(data):
             data = data()
             
@@ -176,14 +180,18 @@ class DataTableRequest(object):
             for number, name in enumerate(self.columns):
                 # Get dot separated elements (depath search)
                 if in_depth:
+                    #import ipdb; ipdb.set_trace()
                     data = instance
                     for attr_name in name.split('.'):
                         data = attribute_getter(data, attr_name)
+                    if isinstance(data, models.Model):
+                        data = smart_unicode(data)
                     row[number] = data
                 else:
                     row[number] = attribute_getter(instance, name)
             result.append(row)
         return result
+
 
 
 def jq_datatable(request, queryset = None):
@@ -261,3 +269,23 @@ def jq_datatable(request, queryset = None):
             result.update(sTraceback = traceback.format_exc())
     #print "La respuesta es: ", pformat(result)
     return HttpResponse(simplejson.dumps(result))
+
+
+def get_from(request):
+    # TODO: Better HTML
+    ''' Gets a form from request '''
+    form_name = request.REQUEST.get('form', None)
+    if not form_name:
+        return HttpResponse("Falta el form")
+    try:
+        from_path, form_class = form_name.rsplit('.', 1)
+        m = __import__(from_path, {}, {}, '*')
+        Form = getattr(m, form_class)
+        form = Form()
+        
+    except (ImportError, AttributeError), e:
+        return HttpResponse("<h3>No se pudo encontrar el modulo %s</h3>" % form_name)
+    
+    form_html = render_to_string('datatables/forms/form.html', dict(form = form))
+    return HttpResponse(mark_safe(form_html))
+        

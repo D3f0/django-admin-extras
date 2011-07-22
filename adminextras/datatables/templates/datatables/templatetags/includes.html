@@ -1,0 +1,10 @@
+		<!-- begin of django datatable includes -->
+		<script type="text/javascript" src="{{STATIC_URL}}js/datatabes/media/js/jquery.dataTables.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}js/datatables/djangoDatatables.js"></script>
+		<link type="text/javascript" rel="stylesheet" href="{{STATIC_URL}}js/datatabes/media/css/demo_table.css"/>
+		<script type="text/javascript">
+			(function(){
+				django.datatable.base_url = "{{ BASE_DATATABLE_URL }}";		
+			})();
+		</script>
+		<!-- end of datatable includes -->

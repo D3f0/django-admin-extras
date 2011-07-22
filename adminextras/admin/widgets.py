@@ -15,6 +15,7 @@ from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from itertools import chain
 import simplejson
 from django.conf import settings
+#from admin.utils import compose
 
 
 USE_COMPRESSED_JQUERY_UI = hasattr(settings, 'USE_COMPRESSED_JQUERY_UI') and settings.USE_COMPRESSED_JQUERY_UI
@@ -286,3 +287,94 @@ class DialogMedia(Media):
                    settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
                    )
            }
+
+
+class jQueryUIMultiSelect(SelectMultiple):
+    # http://www.erichynds.com/jquery/jquery-ui-multiselect-widget/
+    JS_ATTRS = dict(
+                header = True,
+                height = 175,
+                minWidth = 225,
+                checkAllText = "Check all",
+                uncheckAllText = "Uncheck All",
+                noneSelectedText = "Select options",
+                selectedText = "# selected",
+                selectedList = False,
+                show = "empty string",
+                hide = "empty string",
+                autoOpen = False,
+                multiple = True,
+                classes = "empty string",
+                position = "empty object",
+    )
+    
+    JS_PLUGIN_FILTER_ATTRS = dict(
+                                  label = "Filter",
+                                  width = "100px",
+                                  placeholder = "Enter keywords",
+                                  )
+    
+    def __init__(self, filter = False, *largs, **kwargs):
+        '''
+        @parm filter: bool enables filter plugin
+        '''
+        self.js_multiselect_params = build_params(kwargs, self.JS_ATTRS)
+        self.filter = filter
+        if self.filter:
+            self.js_filter_plugin_attrs = build_params(kwargs, self.JS_PLUGIN_FILTER_ATTRS)
+        super(jQueryUIMultiSelect, self).__init__(*largs, **kwargs)
+    
+    class Media:
+        js = (
+              settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",    # jQuery
+              settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js', # jQueryUi
+              settings.STATIC_URL + 'js/jquery-ui/multiselect/src/jquery.multiselect.min.js',
+              settings.STATIC_URL + 'js/jquery-ui/multiselect/src/jquery.multiselect.filter.min.js',
+              settings.STATIC_URL + 'js/jquery-ui/multiselect/i18n/jquery.multiselect.es.js',
+              settings.STATIC_URL + "js/adminextras/multiselect.js",
+              )
+        css = {
+               'all': (
+                       settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
+                       settings.STATIC_URL + 'js/jquery-ui/multiselect/jquery.multiselect.css',
+                       settings.STATIC_URL + 'js/jquery-ui/multiselect/jquery.multiselect.filter.css',
+                       )
+               
+               }
+    
+    def render(self, name, value, attrs={}):
+        if not attrs.has_key('class') or not attrs.get('class') == 'jqueryuimultiselect':
+            raise Exception("Can't render field, mutliselect.js won't accept them")
+        attrs.update(multiselect_attrs = self.js_multiselect_params)
+        if self.filter:
+            attrs.update(filter_attrs = self.js_filter_plugin_attrs)
+            #import ipdb; ipdb.set_trace()
+        html = super(jQueryUIMultiSelect, self).render(name, value, attrs)
+        #print "MULTISELECT MARKUP:", html
+        return html
+    
+    
+def build_params(params, options, remove_param_keys = True, encode = True):
+    '''Generates a dicionary or a JSON encoded version of a dictionary,
+    taking its key, value pairs from  params when the pair differs from options
+    (where it's supposed to have the defaults)
+    @param params: The arguments (usually kwargs from some call)
+    @param options: Defaults dictionary
+    @param remove_param_keys: Remove params keys when a non default value is found 
+    
+    '''
+    attrs = {}
+    for name in params:
+        if name in options:
+            value = params.get(name)
+            if value != options[name]: 
+                # Not the default
+                attrs[name] = value
+    # Remove those keys which were not expected
+    if remove_param_keys:
+        map(lambda name: params.pop(name), attrs)
+    if encode:
+        return simplejson.dumps(attrs)
+    return attrs
+
+#build_json_params = compose(build_params, simplejson.dumps)

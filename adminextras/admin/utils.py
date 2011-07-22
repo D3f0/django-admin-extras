@@ -79,3 +79,9 @@ class SimpleJsonResponse(HttpResponse):
             args = d.update(args)
         content = simplejson.dumps(args, cls=JsonEncoder, ensure_ascii=False, indent=4)
         HttpResponse.__init__(self, content, mimetype = "application/json")
+        
+# Taken from 
+# http://en.wikipedia.org/wiki/Function_composition_%28computer_science%29
+def compose(*funcs, **kfuncs):
+        """Compose a group of functions (f(g(h(..)))) into (fogoh...)(...)"""
+        return reduce(lambda f, g: lambda *args, **kaargs: f(g(*args, **kaargs)), funcs)

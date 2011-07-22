@@ -1,0 +1,9 @@
+{# Custom from rendering #}
+<form class="dialog-form">
+	{% for field in form %}
+		<div class="row">
+			{{ field.label }}
+		{{ field }}
+		</div>
+	{% endfor %}
+</form>
