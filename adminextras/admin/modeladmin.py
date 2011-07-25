@@ -133,7 +133,7 @@ class CustomModelAdmin(ModelAdmin):
         """
         opts = self.opts
         permission_str = opts.app_label + '.' + opts.get_add_permission()
-        print "Buscando permiso por ", permission_str
+        #print "Buscando permiso por ", permission_str
         return request.user.has_perm(permission_str)
     
     def has_view_permission(self, request, obj=None):
@@ -149,7 +149,7 @@ class CustomModelAdmin(ModelAdmin):
         opts = self.opts
         view_permission = "view_%s" % self.model._meta.object_name.lower()
         view_permission = opts.app_label + '.' + view_permission
-        print "View permission", view_permission
+        #print "View permission", view_permission
         return self.has_change_permission(request, obj) or \
             request.user.has_perm(view_permission)
 
@@ -160,7 +160,7 @@ class CustomModelAdmin(ModelAdmin):
         ``add``, ``change``, and ``delete`` mapping to the True/False for each
         of those actions.
         """
-        print "GET_MODEL_PERMS"
+        #print "GET_MODEL_PERMS"
         return {
             'add': self.has_add_permission(request),
             'change': self.has_change_permission(request),
@@ -175,7 +175,7 @@ class CustomModelAdmin(ModelAdmin):
         from django.contrib.admin.views.main import ERROR_FLAG
         opts = self.model._meta
         app_label = opts.app_label
-        print "Buscando permisos para ", request.user, " de vista", self.has_view_permission(request, None)
+        #print "Buscando permisos para ", request.user, " de vista", self.has_view_permission(request, None)
         if not self.has_change_permission(request, None) and not self.has_view_permission(request, None):
             raise PermissionDenied
 
