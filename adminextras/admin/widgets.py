@@ -344,7 +344,10 @@ class jQueryUIMultiSelect(SelectMultiple):
     
     def render(self, name, value, attrs={}):
         if not attrs.has_key('class') or not attrs.get('class') == 'jqueryuimultiselect':
-            raise Exception("Can't render field, mutliselect.js won't accept them")
+            #raise Exception("Can't render field, mutliselect.js won't accept them")
+            attrs.setdefault('class', {})
+            attrs['class'] = 'jqueryuimultiselect'
+            
         attrs.update(multiselect_attrs = self.js_multiselect_params)
         if self.filter:
             attrs.update(filter_attrs = self.js_filter_plugin_attrs)

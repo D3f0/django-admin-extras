@@ -548,7 +548,6 @@ class CustomModelAdmin(ModelAdmin):
         data = []
         qs = self.queryset(request)
         query = self._build_autocomplete_query(value)
-        #print "La query es ", query
         qs = qs.filter(query)
         qs = qs[:self.autocomplete_hits]
         try:
