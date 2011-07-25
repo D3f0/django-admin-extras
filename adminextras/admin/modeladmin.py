@@ -44,7 +44,7 @@ from django.core import urlresolvers
 
 from widgets import *
 
-@debugargs
+#@debugargs
 def override_foreignkeys(model_admin, db_field, request=None, **kwargs):
     '''
     Genera los widgets personalizados agregando información extra. Es 
