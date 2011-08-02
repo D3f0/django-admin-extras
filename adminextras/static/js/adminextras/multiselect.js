@@ -1,34 +1,38 @@
 /**
  * jQuery Multiselect Plugin for Djnago select multiple
  */
-if (typeof(adminextras) == 'undefined') {
+if( typeof (adminextras) == 'undefined') {
 	adminextras = {};
 }
 
-adminextras.multiselect = (function (){
+adminextras.multiselect = (function() {
 	var multiselects = [];
-	
-	function init(){
-		
-		$('.jqueryuimultiselect').each(function (){
-			$(this).find('option[value=""]').each(function (){
-				alert("hoa");
-			});
-			var opts = $.parseJSON($(this).attr('multiselect_attrs'));
-			console.info("Construyendo sobre", this, "con", opts);
-			var multiselect = $(this).multiselect(opts);
-			var filter_opts = $.parseJSON($(this).attr('filter_attrs'));
-			console.info("Filter", filter_opts);
-			if (filter_opts) {
-				console.debug("Convirtiendo", this, "en filtro");
-				$(this).multiselect().multiselectfilter(filter_opts);
-			}
-		});
+
+	function createMultiselect() {
+		// Si hay un elemento vacío, lo quitamos
+		$(this).find('option[value=""]').remove();
+		// Buscamos los parámetros
+		var opts = $.parseJSON($(this).attr('multiselect_attrs'));
+		//console.info("Construyendo sobre", this, "con", opts);
+		var multiselect = $(this).multiselect(opts);
+		var filter_opts = $.parseJSON($(this).attr('filter_attrs'));
+		console.info("Filter", filter_opts);
+		if(filter_opts) {
+			console.debug("Convirtiendo", this, "en filtro");
+			$(this).multiselect().multiselectfilter(filter_opts);
+		}
+		return this;
 	}
-	
+
+	function init() {
+		multiselects = $('.jqueryuimultiselect').map(createMultiselect);
+	}
+
 	jQuery(init);
-	
+
 	return {
-		multiselects: multiselects
+		getMultiselects : function () {
+			return multiselects;
+		}
 	}
 })();
