@@ -4,7 +4,10 @@ from django.db import models
 from django.db.models.loading import get_model
 from django.conf import settings
 import datetime
-import simplejson
+try:
+    from simplejson import dumps as json_dumps
+except ImportError:
+    from json import dumps as json_dumps
 from django.http import HttpResponse
 import traceback
 from django.utils.encoding import smart_unicode
@@ -268,7 +271,7 @@ def jq_datatable(request, queryset = None):
         if settings.DEBUG:
             result.update(sTraceback = traceback.format_exc())
     #print "La respuesta es: ", pformat(result)
-    return HttpResponse(simplejson.dumps(result))
+    return HttpResponse(json_dumps(result))
 
 
 def get_from(request):

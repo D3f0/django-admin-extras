@@ -13,7 +13,10 @@ from django.forms.util import flatatt
 from django.forms.models import ModelChoiceIterator
 from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from itertools import chain
-import simplejson
+try:
+    from simplejson import dumps
+except ImportError:
+    from json import dumps
 from django.conf import settings
 #from admin.utils import compose
 
@@ -210,7 +213,7 @@ class DatePickerInputWidget(DateInput):
                 raise Exception(msg)
             
             d[self.PARAMS[name]] = value
-        return simplejson.dumps(d)
+        return dumps(d)
             
     # TODO: Utilizar get_format('DATE_INPUTS_FORMATS')[0] en js/adminextras/datepicker.js
     def render(self, name, value, attrs=None):
@@ -244,7 +247,7 @@ class ButtonWidget(Widget):
         
         if not attrs.has_key('class'):
             attrs['class'] = 'form_button'
-        attrs['button_params'] = simplejson.dumps({'onclick': self.js_onclick,
+        attrs['button_params'] = dumps({'onclick': self.js_onclick,
                                                    'label': self.js_label or make_label(name)}) 
         final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
         id = final_attrs['id']
@@ -377,7 +380,7 @@ def build_params(params, options, remove_param_keys = True, encode = True):
     if remove_param_keys:
         map(lambda name: params.pop(name), attrs)
     if encode:
-        return simplejson.dumps(attrs)
+        return dumps(attrs)
     return attrs
 
-#build_json_params = compose(build_params, simplejson.dumps)
+#build_json_params = compose(build_params, dumps)

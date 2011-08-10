@@ -20,8 +20,11 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.contrib.admin import widgets as admin_widgets
 from excel import to_excel_admin_action
-from utils import SimpleJsonResponse
-import simplejson
+from responses import SimpleJsonResponse
+try:
+    from simplejson import loads as load_json
+except ImportError:
+    from json import loads as load_json
 from django.db.models.query_utils import Q
 from django.db.models.fields import CharField
 from django.utils.safestring import mark_safe
@@ -593,7 +596,7 @@ class CustomModelAdmin(ModelAdmin):
         query = request.REQUEST.get('query', '{}')
         #print query
         try:
-            consulta = simplejson.loads(query)
+            consulta = load_json(query)
             #print consulta
             qs = self.queryset(request).filter(**consulta)[start:top]
             #print qs
