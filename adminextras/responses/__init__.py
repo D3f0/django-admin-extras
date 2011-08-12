@@ -14,7 +14,7 @@ from django.utils.encoding import smart_str, force_unicode
 import decimal
 from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.utils.functional import Promise
-from django.db.models.query import QuerySet
+from django.db.models.query import QuerySet, ValuesQuerySet
 import datetime
 from django.db import models
 from django.core import serializers
@@ -57,8 +57,12 @@ class JsonEncoder(DateTimeAwareJSONEncoder):
         
         if isinstance(o, Promise):
             return force_unicode(o)
+        elif isinstance(o, ValuesQuerySet):
+            return list(o)
+        
         elif isinstance(o, QuerySet):
             return map(self.default, o)
+        
         elif isinstance(o, datetime.date):
             return o.strftime(self.date_fromat)
         elif isinstance(o, models.Model):
@@ -86,10 +90,11 @@ class SimpleJsonResponse(HttpResponse):
     Serializa un modelo o un queryset. Si tiene definido como atributo el 
     campo extra_json_fields se serializan esos atirbutos si son encontrados.
     '''
-    def __init__(self, d = None, **args):
-        if isinstance(d, dict):
-            args = d.update(args)
-        content = json_dumps(args, cls=JsonEncoder, ensure_ascii=False, indent=4)
+    def __init__(self, data = None, **args):
+        if isinstance(data, dict):
+            data.update(args)
+         
+        content = json_dumps(data, cls=JsonEncoder, ensure_ascii=False, indent=4)
         HttpResponse.__init__(self, content, mimetype = "application/json")
         
 JsonResponse = SimpleJsonResponse
