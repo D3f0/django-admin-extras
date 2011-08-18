@@ -18,6 +18,10 @@ from django.db.models.query import QuerySet, ValuesQuerySet
 import datetime
 from django.db import models
 from django.core import serializers
+from decorator import decorator
+from django.conf import settings
+from traceback import format_exc
+
 JsonSerializer = serializers.get_serializer('json')
 
 class ExcelResponse(HttpResponse):
@@ -90,11 +94,34 @@ class SimpleJsonResponse(HttpResponse):
     Serializa un modelo o un queryset. Si tiene definido como atributo el 
     campo extra_json_fields se serializan esos atirbutos si son encontrados.
     '''
-    def __init__(self, data = None, **args):
+    def __init__(self, data = None, status = 200, **args):
         if isinstance(data, dict):
             data.update(args)
          
         content = json_dumps(data, cls=JsonEncoder, ensure_ascii=False, indent=4)
-        HttpResponse.__init__(self, content, mimetype = "application/json")
+        HttpResponse.__init__(self, content, mimetype = "application/json", status = status)
         
 JsonResponse = SimpleJsonResponse
+
+@decorator
+def json_response(f, *args, **kwargs):
+    try:
+        status_code = 200
+        response = {
+            'status': True,
+            'data': f(*args, **kwargs)
+        }
+    except Exception, e:
+        status_code = 400
+        response = {
+            'status': False,
+            'message': '%s: %s' % (e.__class__.__name__, str(e))
+        }
+        
+        if settings.DEBUG:
+            response.update(traceback = format_exc())
+
+#    if 'callback' in args[0].GET:
+#        body = '%s(%s)' % (args[0].GET['callback'], body)
+
+    return SimpleJsonResponse(response, status=status_code)

@@ -20,7 +20,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.contrib.admin import widgets as admin_widgets
 from excel import to_excel_admin_action
-from responses import SimpleJsonResponse
+from adminextras.responses import SimpleJsonResponse
 try:
     from simplejson import loads as load_json
 except ImportError:
