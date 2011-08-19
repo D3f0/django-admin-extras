@@ -26,6 +26,7 @@ adminextras.autocomplete = (function (){
 	// Creación de un widget de autocompleción
 	function makeAutocompleteInput(input) {
 		
+		console.log("Creando autocomplecion sobre", input);
 		
 		var span = $(input).parent(),
             autocomplete_url = $(span).attr('url'), 
@@ -39,8 +40,7 @@ adminextras.autocomplete = (function (){
                     method: "GET",
                     success: function(xhr){
 						$(this).removeClass('ui-autocomplete-loading');
-                        response(xhr.data);
-						//console.log(xhr.data);
+                        response(xhr);
                     },
                     error: function(){
 						$(this).removeClass('ui-autocomplete-loading');
@@ -85,6 +85,7 @@ adminextras.autocomplete = (function (){
 				}
 			}
 		});
+		$(input).attr('django-autocomplete', 'done');
 		
 		return input;
 	}
@@ -93,12 +94,12 @@ adminextras.autocomplete = (function (){
 	 * @param {Object} input
 	 */
     function check(input){
-		if (autocomplete_inputs.indexOf(input) > 0){
-			console.log("Ya esta el input en autocompleción")
+    	if ($(input).attr('django-autocomplete') != undefined) {
+		//if (autocomplete_inputs.indexOf(input) > 0){
+			console.log("Ya esta el input en autocompleción");
 		} else {
-			console.log("Agregando el input como autocompleción");
             makeAutocompleteInput(input);
-            autocomplete_inputs[autocomplete_inputs.length] = input;
+            //autocomplete_inputs[autocomplete_inputs.length] = input;
 		}
 	}
 	function clear(link){
