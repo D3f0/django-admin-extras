@@ -14,15 +14,24 @@ adminextras.datepicker = (function (){
 	}
 	
 	function create_datepicker () {
-		var opts = retrieve_options(this); 
+		
+		// En uniform los dates no son el input, así que hacemos el trabajo de buscar
+		// el input manualmente
+		var input;
+		if (! $(this).is('input[type=text]')) {
+			input = $(this).find('input[type=text]');	
+		} else {
+			input = this;
+		}
+		var opts = retrieve_options(input);
 //		$.extend(opts, {
 //			buttonImage: "../../img/adminextras/famfamfam/calendar_view_month.png"
 //		});
-		console.log("Instanciando calendario con opciones", opts);
-		var dp = $(this).datepicker(opts);
+		console.info("Instanciando calendario con opciones", opts, "en elemento", input);
+		var dp = $(input).datepicker(opts);
 		// i18n, 
-		$(this).datepicker( $.datepicker.regional[ "es" ] );
-		datepickers[datepickers.length] = $(this);
+		$(input).datepicker( $.datepicker.regional[ "es" ] );
+		datepickers[datepickers.length] = $(input);
 		//console.log($.datepicker.regional);
 		
 	}
@@ -36,8 +45,14 @@ adminextras.datepicker = (function (){
 		today: function (input){
 			var datepicker = $(input).parents('span.datepicker');
 			var date = new Date();
-			var str_date = date.strftime('%d/%m/%Y');
-			$(datepicker).find('input[type=text]').attr('value', str_date);
+			// var str_date = date.strftime('%d/%m/%Y');
+			var date = date.getDay() + '/' + date.getMonth() +'/' + date.getFullYear();
+			
+			//try {
+			var dateInput = $(datepicker).find('input[type=text]');
+			dateInput.attr('value', date);
+			console.log(dateInput);
+			//} catch(e) {console.error(e)}
 			return false;
 		},
 		datepickers: datepickers
