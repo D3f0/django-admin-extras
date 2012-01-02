@@ -23,6 +23,19 @@ adminextras.autocomplete = (function (){
 			return autocomplete_inputs[input];
 		}
 	}
+	
+	/** Effect for user hinting */
+	function flashInputWithColor(input, color, time) {
+		if (!time) {
+			time = 150;
+		}
+		var originalCssColor = $(input).css('background-color');
+		$(input).css('background-color', color);
+		window.setTimeout(function(){
+			$(input).css('background-color', originalCssColor);
+		}, time);
+	}
+	
 	// Creación de un widget de autocompleción
 	function makeAutocompleteInput(input) {
 		
@@ -34,17 +47,18 @@ adminextras.autocomplete = (function (){
 		
 		$(input).autocomplete({
             source: function(request, response){
-            	
                 $.ajax({
                     url: autocomplete_url + request.term + '/',
                     method: "GET",
                     success: function(xhr){
-						$(this).removeClass('ui-autocomplete-loading');
+						$(input).removeClass('ui-autocomplete-loading');
                         response(xhr);
                     },
                     error: function(){
-						$(this).removeClass('ui-autocomplete-loading');
-                    	console.error("Error de autocompletado");
+						$(input).removeClass('ui-autocomplete-loading');
+                    	console.error("Error de autocompletado", this, arguments);
+                    	flashInputWithColor(input, '#FF2323', 333);
+						
                     }
                 });
             },
@@ -73,14 +87,9 @@ adminextras.autocomplete = (function (){
 				// Backspace?
 				if (evt.keyCode == 8){
 					if ($(this).attr('value').length <= 1) {
-						// Indicación con color de fondo rojo
-						$(this).css('background-color', '#ef0000');
 						// Borramos el valor del hidden
 						$(this).prev('input[type="hidden"]').attr('value', '');
-						var that = this;
-						window.setTimeout(function(){
-							$(that).css('background-color', 'white');
-						}, 150);
+						flashInputWithColor(this, 'red');
 					}
 				}
 			}
