@@ -13,11 +13,15 @@ from django.forms.util import flatatt
 from django.forms.models import ModelChoiceIterator
 from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from itertools import chain
+from django.template.loader import render_to_string
+from django.template.base import Template
+from django.template.context import Context
 try:
     from simplejson import dumps
 except ImportError:
     from json import dumps
 from django.conf import settings
+from re import compile
 #from admin.utils import compose
 
 
@@ -32,7 +36,7 @@ class AdminAutoCompleteFKInputWidget(TextInput):
     def __init__(self, queryset = None, url = None,  *largs, **kwargs):
         TextInput.__init__(self, *largs, **kwargs)
         self.url = url
-        self.qs = queryset
+        self.qs = queryset        
         
     def render(self, name, value, attrs=None):
         '''
@@ -55,6 +59,12 @@ class AdminAutoCompleteFKInputWidget(TextInput):
             help_text = "<p class='helptext'>%s</p>" % self.help_text
         else:
             help_text = ''
+        
+        # URL guessed in CustomModelAdmin, and set in the get_form method
+        URL_PTRN = compile(r'\{\{\s*URL\s*\}\}\/?') 
+        if URL_PTRN.search(self.url):
+            self.url = URL_PTRN.sub(getattr(self, 'guessed_admin_path'), self.url) 
+            #sub(, self.guessed_admin_path, self.url)
         inner_widgets = '\n'.join([hidden_input, autocomp_input, help_text, ]) + '\n'
         return mark_safe(container % (self.url, inner_widgets))
     

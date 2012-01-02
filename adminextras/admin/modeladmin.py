@@ -21,6 +21,7 @@ from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.contrib.admin import widgets as admin_widgets
 from excel import to_excel_admin_action
 from adminextras.responses import SimpleJsonResponse
+from django.db.models.loading import get_app
 try:
     from simplejson import loads as load_json
 except ImportError:
@@ -46,6 +47,9 @@ FORMATO_FECHA = settings.DATE_INPUT_FORMATS[0]
 from django.core import urlresolvers
 
 from widgets import *
+import imp
+from utils import get_form_path
+
 
 #@debugargs
 def override_foreignkeys(model_admin, db_field, request=None, **kwargs):
@@ -117,6 +121,7 @@ class CustomModelAdmin(ModelAdmin):
     Además prvee un sistema de autocompletado para los foreignkeys que requieran
     trabajen con un queryset muy extenso que podría elevar excesivamente el consumo
     de memoria de la aplicación.
+    Trabajo 
     '''
     add_form_template = 'adminextras/admin/custom_change_form.html'
     change_form_template = 'adminextras/admin/custom_change_form.html'
@@ -619,6 +624,31 @@ class CustomModelAdmin(ModelAdmin):
                                   context_instance = RequestContext(request))
         #return render_to_response('admin/change_list.html', {}, 
         #                          context_instance = RequestContext(request))
+        
+    def get_form(self, request, *largs):
+        
+        form = super(CustomModelAdmin, self).get_form(request, *largs)
+        formpath = get_form_path(form)
+        root = self.guess_admin_site_url()
+         
+        for name, field in form.base_fields.items():
+            if isinstance(field.widget, AdminAutoCompleteFKInputWidget):
+                #field.widget.guessed_admin_path = guessed_admin_path
+                ac_url = "/%s/autocomplete/%s/%s/" % (root,
+                                                                formpath,
+                                                                name)
+                ac_url = ac_url.replace('//', '/')
+                field.widget.url = ac_url  
+                print ac_url
+        #from ipdb import set_trace; set_trace()
+        return form
+    
+    def guess_admin_site_url(self):
+        ''' Guess admin site url '''
+        site_name = self.admin_site.name
+        return Template('{{% url {0}:index %}}'.format(site_name)).render(Context())
+    
+
 
 #===============================================================================
 # Inlines
@@ -670,84 +700,47 @@ class CustomAdminSite(AdminSite):
                     raise ImproperlyConfigured("El inline no es subclase de CustomTabularInline")
         return AdminSite.register(self, model_or_iterable, admin_class, **options)
     
-    # ------------------------------------------------------------------------
-    # Definiciones para un menú lateral
-    # ------------------------------------------------------------------------
     
-    SIDEBAR_MENU_TITLE_TMPL = '''
-                                <h3>{{ title }}</h3>
-                                <div><ul>{{ items_html }}</ul></div>'''
     
-    SIDEBAR_MENU_ITEM_TMPL = '''
-                            <li><a {% if image %}style="background-image: url('{{ image }}')" {% endif %}
-                            href="{{ href }}">{{ name }}</a></li>'''
+    def get_urls(self):
+        urls = AdminSite.get_urls(self)
+        my_urls = patterns('', 
+            #(r'^autocomplete/(?P<model_admin>.{2,60})/(?P<field>[\d\w]+)/(?P<user_input>.{1,60})/?$', self.admin_view(self.autocomplete_view))
+            (r'^autocomplete/(?P<formpath>[\w\d\.\_]{3,60})/(?P<field>[\w\d\.\_]{3,100})/(?P<user_input>.{0,60})/?$', self.admin_view(self.autocomplete_view))
+        )
+        
+        return my_urls + urls 
     
-    def get_navigation_menu(self):
+    def autocomplete_view(self, request, formpath, field, user_input):
+        ''' Una vista para el autocompletado de manera que sea independiente
+        de la URL en la que esté publicada la admin
+        @param model_admin: model_admin 
         '''
-        Genera la estrucutra del menú lateral, 
-        <h3>App Name</h3>
-        <div>
-            <ul><a href="...">Model</ul>
-            <ul><a href="...">Model</ul>
-            <ul><a href="...">Model</ul>
-        </div>
-        Ver SIDEBAR_MENU_TITLE_TMPL y SIDEBAR_MENU_TITLE_TMPL de esta clase.
-        '''
+        form = None
+        appname, classname = formpath.split('.')
         
-        # Create the templates
-        title_templ = Template(self.SIDEBAR_MENU_TITLE_TMPL.replace('\n', ' '))
-        items_templ = Template(self.SIDEBAR_MENU_ITEM_TMPL.replace('\n', ' '))
-        
-        html = u''
-        apps = {}
-        # Primero ordenar por aplicación
-        for modelo, admin in self._registry.iteritems():
-            app_label = modelo._meta.app_label
-            if not app_label in apps:
-                apps[app_label] = [(modelo, admin) ]
-            else:
-                apps[app_label].append((modelo, admin) )
-        
-        # Generar el menú
-        for app, mode_admin_tuples in apps.iteritems():
-            # For each application contents points to its registered models
-            #html = u'%s<h3>%s</h3>\n<div><ul>' % (html, app.title())
-            def compare_verbose_name(a, b):
-                return cmp(smart_unicode(a[0]._meta.verbose_name), smart_unicode(b[0]._meta.verbose_name))
-            # Order models by their names
-            mode_admin_tuples = sorted(mode_admin_tuples, cmp = compare_verbose_name)
-            items_html = ''
+        app = get_app(appname)
+        try:
+            form_module_path = app.__package__ + '.forms'
+            forms = __import__(form_module_path, fromlist = ['*'])
+            form  = getattr(forms, classname, None)
+            # Shell
+        except ImportError as exc:
+            # TODO: Get the model based on the name
             
-            for model, admin in mode_admin_tuples:
-                # Name
-                name = model._meta.verbose_name_plural
-                module_name = model._meta.module_name
-                
-                if name[0] not in string.uppercase:
-                    name = name.title()
-                name = force_unicode(name)
-                # Image
-                if module_name in settings.MODEL_ICONS:
-                    image_url = settings.MEDIA_URL + 'img/icons/' + settings.MODEL_ICONS[module_name]
-                else:
-                    image_url = ''
-                
-                href = '/' + '/'.join([self.name, app, module_name])
-                
-                item_html = items_templ.render(Context(dict(
-                                                            image = image_url,
-                                                            href = href,
-                                                            name = name
-                                                            )))
-                items_html = ''.join([items_html, item_html])
-                
-            menu_html = title_templ.render(Context(dict(
-                                                        title = app.title(),
-                                                        items_html = mark_safe(items_html)
-                                                   )))
-            #print menu_html
-            html = u''.join([html, menu_html])    
-            
-        
-        return mark_safe(html)
+            pass
+        f = form()
+        field = f.fields[field]
+        queryset = field.queryset
+        return self.filter_through_custommodeladmin(user_input, queryset)
     
+    def filter_through_custommodeladmin(self, user_input, queryset):
+        ''' Genera la query de autocomplete basado en los CustomModelAdmin'''
+        custom_modeladmin = self._registry.get(queryset.model, None)
+        # Copatibilizar con lo que ya existía
+        if custom_modeladmin and hasattr(custom_modeladmin, 'autocomplete'):
+            # Ya tiene la lógica, utilizarla
+            return custom_modeladmin.autocomplete(user_input)
+        
+        
+        

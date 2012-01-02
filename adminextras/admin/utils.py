@@ -1,6 +1,7 @@
 # encoding: utf-8
 from django.db.models import get_app, get_apps
 from django.core.exceptions import ImproperlyConfigured
+from django import forms
 
 def get_form_from_app(app, form_name):
     name = app.__name__
@@ -28,6 +29,17 @@ def get_form(form_name):
             if form:
                 return form
 
+def get_form_path(modelform):
+    ''' Gets form path 
+    @param form: Get form path
+    '''
+    assert issubclass(modelform, forms.ModelForm), "Autocomplete form"
+    from django.conf import settings
+    appnames = map(lambda fullname: fullname.rsplit('.', 1)[0], settings.INSTALLED_APPS)
+    #from ipdb import set_trace; set_trace()
+    path = modelform._meta.model._meta.app_label + '.' + modelform.__name__
+    return path
+    
 # Taken from 
 # http://en.wikipedia.org/wiki/Function_composition_%28computer_science%29
 def compose(*funcs, **kfuncs):
