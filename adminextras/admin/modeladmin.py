@@ -22,6 +22,7 @@ from django.contrib.admin import widgets as admin_widgets
 from excel import to_excel_admin_action
 from adminextras.responses import SimpleJsonResponse
 from django.db.models.loading import get_app
+from adminextras.admin.exceptions import NotRegisteredModel
 try:
     from simplejson import loads as load_json
 except ImportError:
@@ -634,12 +635,10 @@ class CustomModelAdmin(ModelAdmin):
         for name, field in form.base_fields.items():
             if isinstance(field.widget, AdminAutoCompleteFKInputWidget):
                 #field.widget.guessed_admin_path = guessed_admin_path
-                ac_url = "/%s/autocomplete/%s/%s/" % (root,
-                                                                formpath,
-                                                                name)
+                ac_url = "/%s/autocomplete/%s/%s/" % (root, formpath, name)
                 ac_url = ac_url.replace('//', '/')
                 field.widget.url = ac_url  
-                print ac_url
+                print "Autocomplete form path is:", ac_url
         #from ipdb import set_trace; set_trace()
         return form
     
@@ -706,7 +705,7 @@ class CustomAdminSite(AdminSite):
         urls = AdminSite.get_urls(self)
         my_urls = patterns('', 
             #(r'^autocomplete/(?P<model_admin>.{2,60})/(?P<field>[\d\w]+)/(?P<user_input>.{1,60})/?$', self.admin_view(self.autocomplete_view))
-            (r'^autocomplete/(?P<formpath>[\w\d\.\_]{3,60})/(?P<field>[\w\d\.\_]{3,100})/(?P<user_input>.{0,60})/?$', self.admin_view(self.autocomplete_view))
+            (r'^autocomplete/(?P<formpath>[\w\d\.\_]{3,60})/(?P<field>[\w\d\.\_]{3,100})/(?P<user_input>[\w\d\.\s]{0,60})/?$', self.admin_view(self.autocomplete_view))
         )
         
         return my_urls + urls 
@@ -731,16 +730,20 @@ class CustomAdminSite(AdminSite):
             pass
         f = form()
         field = f.fields[field]
-        queryset = field.queryset
-        return self.filter_through_custommodeladmin(user_input, queryset)
+        try:
+            return self.filter_through_custommodeladmin(field.queryset.model, request, user_input)
+        except NotRegisteredModel:
+             
+            raise Exception("AAAA!")
     
-    def filter_through_custommodeladmin(self, user_input, queryset):
+    def filter_through_custommodeladmin(self, model, request, user_input):
         ''' Genera la query de autocomplete basado en los CustomModelAdmin'''
-        custom_modeladmin = self._registry.get(queryset.model, None)
+        custom_modeladmin = self._registry.get(model, None)
         # Copatibilizar con lo que ya existía
-        if custom_modeladmin and hasattr(custom_modeladmin, 'autocomplete'):
+        if custom_modeladmin:
             # Ya tiene la lógica, utilizarla
-            return custom_modeladmin.autocomplete(user_input)
-        
+            print "Usando %s %s" % (custom_modeladmin, user_input)
+            return custom_modeladmin.autocomplete(request, user_input)
+        raise NotRegisteredModel("%s is not registered for autocomplete" % model)
         
         
