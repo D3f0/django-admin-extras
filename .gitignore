@@ -1,3 +1,5 @@
 *.zip
 *.pyc
 .*
+build
+*.egg-info

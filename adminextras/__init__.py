@@ -7,6 +7,6 @@ __doc__ = '''
 '''
 
 
-VERSION = (0, 1, 'a')
+VERSION = "0.1.9" 
 
 __version__ = VERSION
