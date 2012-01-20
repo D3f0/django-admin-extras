@@ -23,6 +23,7 @@ from excel import to_excel_admin_action
 from adminextras.responses import SimpleJsonResponse
 from django.db.models.loading import get_app
 from adminextras.admin.exceptions import NotRegisteredModel
+from adminextras.autocomplete.modeladmin import modeladmin_autocomplete
 try:
     from simplejson import loads as load_json
 except ImportError:
@@ -85,12 +86,6 @@ def override_foreignkeys(model_admin, db_field, request=None, **kwargs):
         print "«%s» es clave" % name
         return f_orig
     
-    
-    #print "*"* 35
-    #print "Nombre de campo, id en el modelo", name, model_admin.model._meta.pk.name
-    #print "*"* 35
-    #print related_db_field
-    #urlresolvers.reverse(viewname, urlconf, args, kwargs, prefix, current_app)
     autocomp_url = '/'.join([admin_site.name, 
                              target_model._meta.app_label,
                              target_model._meta.module_name, 
@@ -441,9 +436,6 @@ class CustomModelAdmin(ModelAdmin):
         if custom_widget:
             widget = custom_widget()
             field.widget =  widget
-        #if type(db_field) == models.DateField:
-        #    import ipdb; ipdb.set_trace()
-            
         
         # Actualizar los valores
         attrs = CustomModelAdmin.field_type_attrs.get(type(field), {})
@@ -453,9 +445,6 @@ class CustomModelAdmin(ModelAdmin):
             else:
                 field.widget.attrs = attrs
         return field
-    
-    
-    
     
     @classmethod
     def register_attr_for_field(cls, field_type, **opts):
@@ -506,17 +495,16 @@ class CustomModelAdmin(ModelAdmin):
         urls = super(CustomModelAdmin, self).get_urls()
         my_urls = patterns('',
             (r'^excel/$', self.admin_site.admin_view(self.exportar_excel)),
-            (r'^autocomplete/$', self.admin_site.admin_view(self.autocomplete)),
-            (r'^autocomplete/(?P<value>.{0,60})/$', self.admin_site.admin_view(self.autocomplete)),
             (r'^json_dump/?$', self.admin_site.admin_view(self.query_dump)),
             (r'^json_dump/(?P<pk>[\d\w\.\s]+)?$', self.admin_site.admin_view(self.json_dump)),
             (r'^quickview/(?P<pk>[\d\w\.\s]+)?$', self.admin_site.admin_view(self.quickview)),
             (r'^list_objects/?$', self.admin_site.admin_view(self.list_objects)),
+            
+            # Deprecated
+            #(r'^autocomplete/$', self.admin_site.admin_view(self.autocomplete)),
+            #(r'^autocomplete/(?P<value>.{0,60})/$', self.admin_site.admin_view(self.autocomplete)),
         )
         full_url = my_urls + urls
-#        for url in full_url:
-#            print "*", url 
-        
         return full_url
     
     
@@ -526,58 +514,6 @@ class CustomModelAdmin(ModelAdmin):
         '''
         queryset = self.queryset(request)
         return to_excel_admin_action(self, request, queryset)
-    
-    
-    def _build_autocomplete_query(self, value):
-        '''
-        Genera la query de búsqueda.
-        La búsqueda es por campos que comiencen con value y sin distinción
-        de mayúsculas y minúsculas.
-        '''
-        if not value:
-            return Q()
-        d = {} # Unico dict
-        model_meta = self.model._meta
-        if not self.autocomplete_fields:
-            # Buscar el primer campo de texto
-            for f in model_meta.fields:
-                if isinstance(f, CharField):
-                    d['%s__%s' % (f.name, self.autocomplete_filter_mode)] = value
-        else:
-            for f_name in self.autocomplete_fields:
-                d['%s__%s' % (f_name, self.autocomplete_filter_mode)] = value
-        return Q(**d)
-                
-    def autocomplete(self, request, value = None):
-        '''
-        Vista que devuelve la autocompleción
-        '''
-        #import time; time.sleep(2) # Simular el dealy
-        log = {}
-        data = []
-        qs = self.queryset(request)
-        query = self._build_autocomplete_query(value)
-        qs = qs.filter(query)
-        qs = qs[:self.autocomplete_hits]
-        try:
-            cant = qs.count()
-        except Exception, e:
-            cant = -1 # Error
-            if settings.DEBUG:
-                log = {'error': unicode(e)}
-        else:
-            for obj in qs:
-                data.append({'value': unicode(obj), 'label': unicode(obj), 'pk': obj.pk})
-                for attr_name in self.autocomplete_extra_values:
-                    f = getattr(obj, attr_name, '')
-                    if callable(f):
-                        f = f()
-                    data.append({attr_name: f})
-        finally:
-            if cant < 1:
-                data = [{'value': 'Sin resultados', 'label': 'Sin resultados', 'pk': ''}]
-                cant = 0
-        return SimpleJsonResponse(success = True, data = data, cant = cant, log = log)
     
     def json_dump(self, request, pk = None ):
         if pk:
@@ -647,8 +583,6 @@ class CustomModelAdmin(ModelAdmin):
         site_name = self.admin_site.name
         return Template('{{% url {0}:index %}}'.format(site_name)).render(Context())
     
-
-
 #===============================================================================
 # Inlines
 #===============================================================================
@@ -707,7 +641,6 @@ class CustomAdminSite(AdminSite):
             #(r'^autocomplete/(?P<model_admin>.{2,60})/(?P<field>[\d\w]+)/(?P<user_input>.{1,60})/?$', self.admin_view(self.autocomplete_view))
             (r'^autocomplete/(?P<formpath>[\w\d\.\_]{3,60})/(?P<field>[\w\d\.\_]{3,100})/(?P<user_input>[\w\d\.\s]{0,60})/?$', self.admin_view(self.autocomplete_view))
         )
-        
         return my_urls + urls 
     
     def autocomplete_view(self, request, formpath, field, user_input):
@@ -716,34 +649,30 @@ class CustomAdminSite(AdminSite):
         @param model_admin: model_admin 
         '''
         form = None
-        appname, classname = formpath.split('.')
-        
-        app = get_app(appname)
         try:
+            appname, classname = formpath.split('.')
+            app = get_app(appname)
             form_module_path = app.__package__ + '.forms'
             forms = __import__(form_module_path, fromlist = ['*'])
             form  = getattr(forms, classname, None)
             # Shell
         except ImportError as exc:
             # TODO: Get the model based on the name
-            
+            return SimpleJsonResponse([dict(
+                                            label = "Error no pude generar un form",
+                                            pk = '',
+                                            verbose = "No pude generar un form",
+                                            )])
+        except ImproperlyConfigured as e:
+            # La aplicación no existe, esto es un uso mal intencionado
             pass
+        except ValueError:
+            # No se pudo hacer el split
+            pass
+        form.user = request.user # Filtrar
+        #from IPython import embed; embed()
         f = form()
         field = f.fields[field]
-        try:
-            return self.filter_through_custommodeladmin(field.queryset.model, request, user_input)
-        except NotRegisteredModel:
-             
-            raise Exception("AAAA!")
-    
-    def filter_through_custommodeladmin(self, model, request, user_input):
-        ''' Genera la query de autocomplete basado en los CustomModelAdmin'''
-        custom_modeladmin = self._registry.get(model, None)
-        # Copatibilizar con lo que ya existía
-        if custom_modeladmin:
-            # Ya tiene la lógica, utilizarla
-            print "Usando %s %s" % (custom_modeladmin, user_input)
-            return custom_modeladmin.autocomplete(request, user_input)
-        raise NotRegisteredModel("%s is not registered for autocomplete" % model)
         
-        
+        return field.generate_view_data(field.queryset, )
+

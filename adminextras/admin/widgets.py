@@ -22,6 +22,7 @@ except ImportError:
     from json import dumps
 from django.conf import settings
 from re import compile
+from django.db.models import exceptions
 #from admin.utils import compose
 
 
@@ -33,20 +34,49 @@ class AdminAutoCompleteFKInputWidget(TextInput):
     Un widget para autocompletado que trabaja en conjunto con la
     administración.
     '''
-    def __init__(self, queryset = None, url = None,  *largs, **kwargs):
+    
+    def __init__(self, url = None, filter_fields = None, extra_fields = None, *largs, **kwargs):
+        '''
+        Autocomplete 
+        '''
         TextInput.__init__(self, *largs, **kwargs)
-        self.url = url
-        self.qs = queryset        
-        
+        self.filter_fields = filter_fields
+    
+    #===========================================================================
+    # Properties needed for correct behavior, must be set either in the view
+    # or through ModelAdmin
+    #===========================================================================
+    __field_queryset = None
+    @property
+    def field_queryset(self):
+        return self.__field_queryset
+    
+    @field_queryset.setter
+    def field_queryset(self, value):
+        self.__field_queryset = value
+    
+    __autocomplete_url = None
+    @property
+    def autocomplete_url(self):
+        return self.__autocomplete_url
+    
+    @autocomplete_url.setter
+    def autocomplete_url(self, value):
+        self.__autocomplete_url = value
+    
+    
+    
     def render(self, name, value, attrs=None):
         '''
         Generación del HTML del widget
         '''
+        assert self.field_queryset is not None, "Falta inicializar el queryset del field en el get_form"
+        assert self.autocomplete_url is not None, "Falta inicializar la URL"
         obj = ''
-        if value:
+        if value: # Render current value
             try:
                 obj = self.qs.get(pk = value)
-            except Exception: # No existe
+            except exceptions.ObjectDoesNotExist: # No existe
                 pass
         
         
@@ -55,16 +85,9 @@ class AdminAutoCompleteFKInputWidget(TextInput):
         autocomp_input = '<input type="text" value="%s" onfocus="adminextras.autocomplete.check(this)" size="52" id="%s">' % (unicode(obj), 'autocomplete_'+name)
         #autocomp_input += '<a href="javascript:void(0);" onclick="adminautocomp.clear(this)" class="clear_autocomp">Borrar</a>'
         
-        if hasattr(self, 'help_text'):
-            help_text = "<p class='helptext'>%s</p>" % self.help_text
-        else:
-            help_text = ''
         
-        # URL guessed in CustomModelAdmin, and set in the get_form method
-        URL_PTRN = compile(r'\{\{\s*URL\s*\}\}\/?') 
-        if URL_PTRN.search(self.url):
-            self.url = URL_PTRN.sub(getattr(self, 'guessed_admin_path'), self.url) 
-            #sub(, self.guessed_admin_path, self.url)
+        help_text = hasattr(self, 'help_text') and "<p class='helptext'>%s</p>" % self.help_text or ''
+        
         inner_widgets = '\n'.join([hidden_input, autocomp_input, help_text, ]) + '\n'
         return mark_safe(container % (self.url, inner_widgets))
     
@@ -88,8 +111,22 @@ class AdminAutoCompleteFKInputWidget(TextInput):
                'all': (settings.STATIC_URL + 'css/adminextras/autocomplete.css', 
                        settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css')
         }
-        
-
+    
+    MAX_AUTOCOMPLETE_HITS = 50
+    
+    def generate_view_data(self, queryset = None, 
+                           filter_fields = None, 
+                           max_hists = MAX_AUTOCOMPLETE_HITS, 
+                           extra_fields = None, 
+                           filter_mode = 'icontains'):
+        ''' Generate data to send it back to the view, used in AJAX requests. 
+        This method generates the python json-convertable data which should be sent
+        back  
+        '''
+        data = dict(
+                    error = None,
+                    data = None,
+                    )
 #===============================================================================
 # Some widgets which only render part
 #===============================================================================
@@ -392,5 +429,3 @@ def build_params(params, options, remove_param_keys = True, encode = True):
     if encode:
         return dumps(attrs)
     return attrs
-
-#build_json_params = compose(build_params, dumps)
