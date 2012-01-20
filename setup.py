@@ -39,7 +39,7 @@ for dirpath, dirnames, filenames in os.walk(django_dir):
 #===============================================================================
 # http://cburgmer.posterous.com/pip-requirementstxt-and-setuppy
 #===============================================================================
-
+import re
 def parse_requirements(file_name):
     requirements = []
     for line in open(file_name, 'r').read().split('\n'):
