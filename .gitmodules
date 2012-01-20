@@ -1,0 +1,3 @@
+[submodule "adminextras/static/js/mutliselect"]
+	path = adminextras/static/js/mutliselect
+	url = https://github.com/ehynds/jquery-ui-multiselect-widget.git
