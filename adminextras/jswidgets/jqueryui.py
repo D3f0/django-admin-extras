@@ -8,11 +8,11 @@ __all__ = ('DatePickerInputWidget',
 import re
 from json import dumps
 from django.forms import widgets
-from django.conf import settings
 from utils import MediaSubstitutionMetaclass, build_params
 from django.utils.safestring import mark_safe
 from django.forms.util import flatatt
-from adminextras.conf.settings import USE_SPARSE_UI
+# from django.conf import settings
+from adminextras.conf import settings #@UnresolvedImport
 
 #===============================================================================
 # CamelCase to Python fmt 
@@ -42,7 +42,7 @@ class DatePickerInputWidget(widgets.DateInput):
     class Media:
         js = (
               settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",) + (
-              USE_SPARSE_UI and (
+              settings.USE_SPARSE_UI and (
               settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
               settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js", 
               settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.datepicker.js",
@@ -117,7 +117,7 @@ class ButtonWidget(widgets.Widget):
         return html
     
     class Media:
-        js = (USE_SPARSE_UI and (
+        js = (settings.USE_SPARSE_UI and (
               settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
               settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js",
               settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.button.js",
@@ -134,7 +134,7 @@ class DialogMedia(widgets.Media):
     ''' Medios para el diálgo de jQuery '''
     js =  (
           settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",
-          ) + (USE_SPARSE_UI and (
+          ) + (settings.USE_SPARSE_UI and (
           settings.STATIC_URL + "js/jquery-ui/development-bundle//external/jquery.bgiframe-2.1.2.js",
           settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
           settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js", 
