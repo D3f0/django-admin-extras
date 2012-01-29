@@ -1,8 +1,5 @@
-'''
-Created on 29/01/2012
+# coding: utf-8
 
-@author: defo
-'''
 __all__ = ('DatePickerInputWidget', 
            'ButtonWidget', 
            'DialogMedia', 
@@ -15,6 +12,7 @@ from django.conf import settings
 from utils import MediaSubstitutionMetaclass, build_params
 from django.utils.safestring import mark_safe
 from django.forms.util import flatatt
+from adminextras.conf.settings import USE_SPARSE_UI
 
 #===============================================================================
 # CamelCase to Python fmt 
@@ -132,7 +130,7 @@ class ButtonWidget(widgets.Widget):
             'all': ( ),
         }
 
-class DialogMedia(Media):
+class DialogMedia(widgets.Media):
     ''' Medios para el diálgo de jQuery '''
     js =  (
           settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",

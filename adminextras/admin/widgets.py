@@ -2,27 +2,19 @@
 '''
 Widgets para la administración
 '''
-from django.forms.widgets import TextInput, CheckboxInput, Select, DateInput,\
-    MediaDefiningClass, Widget, Media
-from django.utils.safestring import mark_safe
-from django.conf import settings
-from django.utils.encoding import force_unicode
-from django.utils.html import conditional_escape, escape
-from django.core.management import setup_environ
-from django.forms.util import flatatt
-from django.forms.models import ModelChoiceIterator
-from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from itertools import chain
-from django.template.loader import render_to_string
-from django.template.base import Template
-from django.template.context import Context
 try:
     from simplejson import dumps
 except ImportError:
     from json import dumps
+from django.forms.widgets import TextInput, CheckboxInput, Select
+from django.utils.safestring import mark_safe
+from django.utils.encoding import force_unicode
+from django.utils.html import conditional_escape, escape
+from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from django.conf import settings
-from re import compile
 from django.db.models import exceptions
+from adminextras.jswidgets.jqueryui import *
 #from admin.utils import compose
 
 
@@ -196,8 +188,3 @@ class EmptyCheckboxSelectMultiple(CheckboxSelectMultiple):
         output.append(u'</ul>')
         return mark_safe(u'\n'.join(output))
     
-
-
- 
-    
-
