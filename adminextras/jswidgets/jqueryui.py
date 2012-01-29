@@ -192,16 +192,16 @@ class jQueryUIMultiSelect(widgets.SelectMultiple):
         js = (
               settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",    # jQuery
               settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js', # jQueryUi
-              settings.STATIC_URL + 'js/jquery-ui/multiselect/src/jquery.multiselect.min.js',
-              settings.STATIC_URL + 'js/jquery-ui/multiselect/src/jquery.multiselect.filter.min.js',
-              settings.STATIC_URL + 'js/jquery-ui/multiselect/i18n/jquery.multiselect.es.js',
+              settings.STATIC_URL + 'js/multiselect/src/jquery.multiselect.min.js',
+              settings.STATIC_URL + 'js/multiselect/src/jquery.multiselect.filter.min.js',
+              settings.STATIC_URL + 'js/multiselect/i18n/jquery.multiselect.es.js',
               settings.STATIC_URL + "js/adminextras/multiselect.js",
               )
         css = {
                'all': (
                        settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
-                       settings.STATIC_URL + 'js/jquery-ui/multiselect/jquery.multiselect.css',
-                       settings.STATIC_URL + 'js/jquery-ui/multiselect/jquery.multiselect.filter.css',
+                       settings.STATIC_URL + 'js/multiselect/jquery.multiselect.css',
+                       settings.STATIC_URL + 'js/multiselect/jquery.multiselect.filter.css',
                        )
                
                }
