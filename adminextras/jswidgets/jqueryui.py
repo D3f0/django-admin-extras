@@ -195,7 +195,7 @@ class jQueryUIMultiSelect(widgets.SelectMultiple):
               settings.STATIC_URL + 'js/multiselect/src/jquery.multiselect.min.js',
               settings.STATIC_URL + 'js/multiselect/src/jquery.multiselect.filter.min.js',
               settings.STATIC_URL + 'js/multiselect/i18n/jquery.multiselect.es.js',
-              settings.STATIC_URL + "js/adminextras/multiselect.js",
+              #settings.STATIC_URL + "js/adminextras/multiselect.js",
               )
         css = {
                'all': (
