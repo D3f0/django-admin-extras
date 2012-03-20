@@ -44,7 +44,11 @@ def foreign_key_sort(items):
     def add_arc(graph, fromnode, tonode):
         """Add an arc to a graph. Can create multiple arcs.
            The end nodes must already exist."""
-        graph[fromnode].append(tonode)
+        try:
+            graph[fromnode].append(tonode)
+        except KeyError as e:
+            app = fromnode._meta.app_label
+            raise CommandError("{0} application is missing and some models refer to {0} models".format(app,))
         # Update the count of incoming arcs in tonode.
 
         graph[tonode][0] = graph[tonode][0] + 1
@@ -153,12 +157,15 @@ from optparse import OptionParser, make_option
 from django.db.models import get_app, get_apps, get_models
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (make_option('--format', default='json', dest='format',
+    option_list = BaseCommand.option_list + (make_option('-f','--format', default='json', dest='format',
                                help='Specifies the output serialization format for fixtures.'),
-                   make_option('--indent', default=None, dest='indent', type='int',
+                   make_option('-i', '--indent', default=None, dest='indent', type='int',
                                help='Specifies the indent level to use when pretty-printing output'),
                    make_option('-e', '--exclude', default=[], dest='exclude',action='append',
                                help='Exclude appname or appname.Model (you can use multiple --exclude)'),
+                   make_option('-o', '--output', default = None, help = 'Output file'),
+                   make_option('-n', '--natural', action='store_true', dest='use_natural_keys', default=False,
+                                help='Use natural keys if they are available.'),
                    )
      
     help = 'Output the contents of the database as a fixture of the given format.'
@@ -182,7 +189,14 @@ class Command(BaseCommand):
             serializers.get_serializer(options['format'])
         except KeyError:
             raise CommandError("Unknown serialization format: %s" % options['format'])
-
+        
+        # Output
+        output_file = options.get('output')
+        if output_file is None:
+            output = sys.stdout
+        else:
+            output = open(output_file, 'w')
+        
         objects = []
         models = []
         for app in app_list:
@@ -194,8 +208,12 @@ class Command(BaseCommand):
             objects.extend(model._default_manager.all())
         
         try:
-            print serializers.serialize(options['format'], objects, indent=options['indent'])
+            print serializers.serialize(options['format'], objects, 
+                                        indent=options['indent'],
+                                        use_natural_keys=options['use_natural_keys'])
         except Exception, e:
             if options['traceback']:
                 raise
             raise CommandError("Unable to serialize database: %s" % e)
+        finally:
+            output.close()

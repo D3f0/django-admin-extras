@@ -27,7 +27,7 @@ adminextras.datepicker = (function (){
 //		$.extend(opts, {
 //			buttonImage: "../../img/adminextras/famfamfam/calendar_view_month.png"
 //		});
-		console.info("Instanciando calendario con opciones", opts, "en elemento", input);
+		//console.info("Instanciando calendario con opciones", opts, "en elemento", input);
 		var dp = $(input).datepicker(opts);
 		// i18n, 
 		$(input).datepicker( $.datepicker.regional[ "es" ] );
