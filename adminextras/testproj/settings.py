@@ -1,5 +1,12 @@
 # Django settings for testproj project.
 
+import os, sys, django
+gettext = lambda s: s
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
+
+# adminextras
+sys.path.append(os.path.abspath(os.path.join(PROJECT_PATH, '..', '..')))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -93,4 +100,22 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'adminextras',
+    # Widgets
+    'testfields',
 )
+BASE_URL = ''
+STATIC_URL = '{0}/static/'.format(BASE_URL)
+
+STATICFILES_MEDIA_DIRNAMES = (
+    'media',
+    'static',
+)
+
+STATICFILES_DIRS = (
+    ('', os.path.join(PROJECT_PATH, 'media')),
+)
+
+if django.VERSION >= (1,3):
+    STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
+

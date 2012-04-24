@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+	  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	  <title>{% if title %}{{title}}{% else %}Prueba de Formularios{%endif%}</title>
+	  <style type="text/css" media="screen">
+		  HTML {
+		  	font-family: "Arial";
+		  }
+	  </style>
+	</head>
+	<body id="forms" onload="">
+		<div id="name" style="text-align: center;">
+			
+			<form action="forms_submit" method="get" accept-charset="utf-8">
+				{{ debug }}
+			  {{ form }}
+			</form>
+		  
+		</div>
+	</body>
+</html>
