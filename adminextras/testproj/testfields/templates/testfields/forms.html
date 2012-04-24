@@ -13,9 +13,10 @@
 	<body id="forms" onload="">
 		<div id="name" style="text-align: center;">
 			
-			<form action="forms_submit" method="get" accept-charset="utf-8">
-				{{ debug }}
-			  {{ form }}
+			<form action="" method="post" accept-charset="utf-8">
+				{% csrf_token %}  
+			  	{{ form }}
+			  	<input type="submit" name="enviar" value="Enviar" id="enviar"/>
 			</form>
 		  
 		</div>
