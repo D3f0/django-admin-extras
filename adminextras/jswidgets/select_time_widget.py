@@ -33,7 +33,9 @@ class SelectTimeWidget(Widget):
     twelve_hr = False # Default to 24hr.
     use_seconds = True
     
-    def __init__(self, attrs=None, hour_step=None, minute_step=None, second_step=None, twelve_hr=False, use_seconds=True):
+    def __init__(self, attrs=None, hour_step=None, minute_step=None, 
+                 second_step=None, twelve_hr=False, use_seconds=True,
+                 empty_label = '--'):
         """
         hour_step, minute_step, second_step are optional step values for
         for the range of values for the associated select element
@@ -66,6 +68,13 @@ class SelectTimeWidget(Widget):
             self.seconds = range(0,60)
         
         self.use_seconds = use_seconds
+        
+        self.empty_label = empty_label
+        if self.empty_label:
+            self.hours.index(0, self.empty_label)
+            self.minutes.index(0, self.empty_label)
+            self.hours.index(0, self.empty_label)
+        
 
     def render(self, name, value, attrs=None):
         try: # try to get time values from a datetime.time object (value)
