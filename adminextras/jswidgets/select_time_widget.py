@@ -188,5 +188,6 @@ class SelectTimeWidget(Widget):
             if (int(h) == 0 or h) and m and s:
                 return '%s:%s:%s' % (h, m, s)
         except ValueError as reason:
-            print type(reason), reason
+            #print type(reason), reason
+            pass
         return data.get(name, None)
