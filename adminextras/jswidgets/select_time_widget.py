@@ -172,11 +172,10 @@ class SelectTimeWidget(Widget):
 
     def value_from_datadict(self, data, files, name):
         # if there's not h:m:s data, assume zero:
-        
         h = data.get(self.hour_field % name, None if self.empty_label else 0) # hour
         m = data.get(self.minute_field % name, None if self.empty_label else '00') # minute
-        s = data.get(self.second_field % name, None if self.empty_label else '00') # second
-
+        s = data.get(self.second_field % name, #None if self.empty_label else 
+                                                '00') # second
         meridiem = data.get(self.meridiem_field % name, None)
 
         #NOTE: if meridiem is None, assume 24-hr
@@ -188,6 +187,6 @@ class SelectTimeWidget(Widget):
         try:
             if (int(h) == 0 or h) and m and s:
                 return '%s:%s:%s' % (h, m, s)
-        except ValueError:
-            pass
+        except ValueError as reason:
+            print type(reason), reason
         return data.get(name, None)

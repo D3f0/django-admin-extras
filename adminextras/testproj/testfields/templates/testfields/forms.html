@@ -14,8 +14,11 @@
 		<div id="name" style="text-align: center;">
 			
 			<form action="" method="post" accept-charset="utf-8">
-				{% csrf_token %}  
-			  	{{ form }}
+				{% csrf_token %}
+				<table>
+					
+				  	{{ form.as_table }}
+				</table>  
 			  	<input type="submit" name="enviar" value="Enviar" id="enviar"/>
 			</form>
 		  
