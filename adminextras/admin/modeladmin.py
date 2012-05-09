@@ -53,58 +53,6 @@ import imp
 from utils import get_form_path
 
 
-#@debugargs
-def override_foreignkeys(model_admin, db_field, request=None, **kwargs):
-    '''
-    Genera los widgets personalizados agregando información extra. Es 
-    llamado desde formfield_for_foreignkey desde el modelofrom como de los 
-    inlines que se hallan definido.
-    '''
-    admin_site = model_admin.admin_site
-    target_model = db_field.rel.to
-    name = db_field.name
-    rel_modeladmin = admin_site._registry.get(target_model)
-    
-    f_orig = BaseModelAdmin.formfield_for_foreignkey(model_admin, db_field, request, **kwargs)
-    
-    if hasattr(rel_modeladmin, 'autocomplete_fields'):
-        if len(rel_modeladmin.autocomplete_fields) == 0:
-            return f_orig
-         
-    else:
-        print "No tiene «%s» campo autocomplete_fields" % name
-        return f_orig
-    
-    if name.endswith('_ptr'):
-        print "«%s» es un puntero de clase" % name
-        return f_orig
-    if name == 'id':
-        print "«%s» es id" % name
-        return f_orig
-    
-    if name == model_admin.model._meta.pk.name:
-        print "«%s» es clave" % name
-        return f_orig
-    
-    autocomp_url = '/'.join([admin_site.name, 
-                             target_model._meta.app_label,
-                             target_model._meta.module_name, 
-                             'autocomplete'])
-    autocomp_url = '/%s/' % autocomp_url 
-    try:
-        qs = rel_modeladmin.queryset(request)
-    except:
-        qs = target_model.objects.all()
-        
-    widget = AdminAutoCompleteFKInputWidget( queryset = qs, url=autocomp_url, )
-    f = forms.ModelChoiceField(qs, cache_choices = False, 
-                               widget = widget, label = f_orig.label, 
-                               **kwargs)
-    #f.label = f_orig.label # Copiar la etiqueta
-    
-    f.widget.choices = ()
-    return f
-
         
 
 from django.db import models, transaction
@@ -465,21 +413,17 @@ class CustomModelAdmin(ModelAdmin):
     }
     
     #===============================================================================
-    # Autocompletado 
+    # Autocompletado Deprecado en favor de django-selectable 
     #===============================================================================
-    autocomplete_fields = []
-    autocomplete_extra_values = [] # + Pk, __unicode__
-    autocomplete_hits = 20
+    #autocomplete_fields = []
+    #autocomplete_extra_values = [] # + Pk, __unicode__
+    #autocomplete_hits = 20
     # Ejemplo: 'icontains', 'istartswith', 'iendswith'
-    autocomplete_filter_mode = 'istartswith'
+    #autocomplete_filter_mode = 'istartswith'
     
     
-    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        '''
-        Para las calves foraneas, checkear si el queryset es muy grande
-        '''
-        return override_foreignkeys(self, db_field, request, **kwargs)
-
+    
+        
     
     #===========================================================================
     # Exportación a Excel
@@ -587,19 +531,8 @@ class CustomModelAdmin(ModelAdmin):
 # Inlines
 #===============================================================================
 class CustomTabularInline(TabularInline):
+    pass
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        return BaseModelAdmin.formfield_for_dbfield(self, db_field, **kwargs)
-
-    
-    # Usar los mismos overrides
-    formfield_overrides = CustomModelAdmin.formfield_overrides
-    
-    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        '''
-        Para las calves foraneas, checkear si el queryset es muy grande
-        '''
-        return override_foreignkeys(self, db_field, request, **kwargs)
     
 
 class CustomAdminSite(AdminSite):
