@@ -94,13 +94,10 @@ class SimpleJsonResponse(HttpResponse):
     Serializa un modelo o un queryset. Si tiene definido como atributo el 
     campo extra_json_fields se serializan esos atirbutos si son encontrados.
     '''
-    def __init__(self, data = None, status = 200, **args):
+    def __init__(self, data = None, status = 200):
         if not data:
             data = {}
-            
-        if isinstance(data, dict):
-            data.update(args)
-         
+
         content = json_dumps(data, cls=JsonEncoder, ensure_ascii=False, indent=4)
         HttpResponse.__init__(self, content, mimetype = "application/json", status = status)
         
