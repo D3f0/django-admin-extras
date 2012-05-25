@@ -95,13 +95,16 @@ class SimpleJsonResponse(HttpResponse):
     campo extra_json_fields se serializan esos atirbutos si son encontrados.
     '''
     def __init__(self, data = None, status = 200, **args):
+        if not data:
+            data = {}
+            
         if isinstance(data, dict):
             data.update(args)
          
         content = json_dumps(data, cls=JsonEncoder, ensure_ascii=False, indent=4)
         HttpResponse.__init__(self, content, mimetype = "application/json", status = status)
         
-JsonResponse = SimpleJsonResponse
+
 
 @decorator
 def json_response(f, *args, **kwargs):
