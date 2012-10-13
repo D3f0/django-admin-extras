@@ -1,1577 +1,563 @@
-
-<ul class="UIAPIPlugin-toc">
-<li><a href="#overview">Overview</a></li>
-<li><a href="#options">Options</a></li>
-<li><a href="#events">Events</a></li>
-<li><a href="#methods">Methods</a></li>
-<li><a href="#theming">Theming</a></li>
-</ul>
-<div class="UIAPIPlugin">
-  <h1>jQuery UI Draggable</h1>
-  <div id="overview">
-    <h2 class="top-header">Overview</h2>
-    <div id="overview-main">
-        <p>The jQuery UI Draggable plugin makes selected elements draggable by mouse.</p>
-<p>Draggable elements gets a class of <code>ui-draggable</code>. During drag the element also gets a class of <code>ui-draggable-dragging</code>. If you want not just drag, but drag-and-drop, see the jQuery UI Droppable plugin, which provides a drop target for draggables.</p>
-<p>All callbacks (start, stop, drag) receive two arguments: The original browser event and a prepared ui object, view below for a documentation of this object (if you name your second argument 'ui'):</p>
-<ul>
-<li><b>ui.helper</b> - the jQuery object representing the helper that's being dragged</li>
-<li><b>ui.position</b> - current position of the helper as { top, left } object, relative to the offset element</li>
-<li><b>ui.offset</b> - current absolute position of the helper as { top, left } object, relative to page</li>
-</ul>
-<p><br />
-</p>
-<p>To manipulate the position of a draggable during drag, you can either <a href="http://jsbin.com/etako/edit" class="external text" title="http://jsbin.com/etako/edit">use a wrapper as the draggable helper</a> and position the wrapped element with absolute positioning, or  you can correct internal values like so: <code>$(this).data('draggable').offset.click.top -= x</code>.</p>
-    </div>
-    <div id="overview-dependencies">
-        <h3>Dependencies</h3>
-        <ul>
-<li>UI Core</li>
-<li>UI Widget</li>
-<li>UI Mouse</li>
-</ul>
-    </div>
-    <div id="overview-example">
-        <h3>Example</h3>
-        <div id="overview-example" class="example">
-<ul><li><a href="#demo"><span>Demo</span></a></li><li><a href="#source"><span>View Source</span></a></li></ul>
-<p><div id="demo" class="tabs-container" rel="170">
-Initialize a draggable with default options.<br />
-</p>
-<pre>$(&quot;#draggable&quot;).draggable();
-</pre>
-<p></div><div id="source" class="tabs-container">
-</p>
-<pre>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-  &lt;link href=&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;/&gt;
-  &lt;script src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js&quot;&gt;&lt;/script&gt;
-  &lt;script src=&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js&quot;&gt;&lt;/script&gt;
-  &lt;style type=&quot;text/css&quot;&gt;
-    #draggable { width: 100px; height: 70px; background: silver; }
-  &lt;/style&gt;
-  &lt;script&gt;
-  $(document).ready(function() {
-    $(&quot;#draggable&quot;).draggable();
-  });
-  &lt;/script&gt;
-&lt;/head&gt;
-&lt;body style="font-size:62.5%;"&gt;
-  
-&lt;div id=&quot;draggable&quot;&gt;Drag me&lt;/div&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;
-</pre>
-<p></div>
-</p><p></div>
-    </div>
-  </div>
-  <div id="options">
-    <h2 class="top-header">Options</h2>
-    <ul class="options-list">
-      
-<li class="option" id="option-disabled">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-disabled">disabled</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Boolean</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Disables (true) or enables (false) the draggable. Can be set when initialising (first creating) the draggable.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>disabled</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ disabled: true });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>disabled</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var disabled = $( ".selector" ).draggable( "option", "disabled" );
-//setter
-$( ".selector" ).draggable( "option", "disabled", true );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-addClasses">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-addClasses">addClasses</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Boolean</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">true</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>If set to false, will prevent the <code>ui-draggable</code> class from being added. This may be desired as a performance optimization when calling <code>.draggable()</code> init on many hundreds of elements.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>addClasses</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ addClasses: false });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>addClasses</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var addClasses = $( ".selector" ).draggable( "option", "addClasses" );
-//setter
-$( ".selector" ).draggable( "option", "addClasses", false );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-appendTo">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-appendTo">appendTo</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Element, Selector</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">'parent'</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>The element passed to or selected by the <code>appendTo</code> option will be used as the draggable helper's container during dragging. By default, the helper is appended to the same container as the draggable.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>appendTo</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ appendTo: 'body' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>appendTo</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var appendTo = $( ".selector" ).draggable( "option", "appendTo" );
-//setter
-$( ".selector" ).draggable( "option", "appendTo", 'body' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-axis">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-axis">axis</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">String</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Constrains dragging to either the horizontal (x) or vertical (y) axis. Possible values: 'x', 'y'.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>axis</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ axis: 'x' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>axis</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var axis = $( ".selector" ).draggable( "option", "axis" );
-//setter
-$( ".selector" ).draggable( "option", "axis", 'x' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-cancel">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-cancel">cancel</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Selector</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">':input,option'</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Prevents dragging from starting on specified elements.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>cancel</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ cancel: 'button' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>cancel</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var cancel = $( ".selector" ).draggable( "option", "cancel" );
-//setter
-$( ".selector" ).draggable( "option", "cancel", 'button' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-connectToSortable">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-connectToSortable">connectToSortable</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Selector</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Allows the draggable to be dropped onto the specified sortables. If this option is used (<code>helper</code> must be set to 'clone' in order to work flawlessly), a draggable can be dropped onto a sortable list and then becomes part of it.
-</p><p>Note: Specifying this option as an array of selectors has been removed.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>connectToSortable</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ connectToSortable: 'ul#myList' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>connectToSortable</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var connectToSortable = $( ".selector" ).draggable( "option", "connectToSortable" );
-//setter
-$( ".selector" ).draggable( "option", "connectToSortable", 'ul#myList' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-containment">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-containment">containment</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Selector, Element, String, Array</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Constrains dragging to within the bounds of the specified element or region. Possible string values: 'parent', 'document', 'window', [x1, y1, x2, y2].</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>containment</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ containment: 'parent' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>containment</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var containment = $( ".selector" ).draggable( "option", "containment" );
-//setter
-$( ".selector" ).draggable( "option", "containment", 'parent' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-cursor">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-cursor">cursor</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">String</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">'auto'</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>The css cursor during the drag operation.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>cursor</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ cursor: 'crosshair' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>cursor</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var cursor = $( ".selector" ).draggable( "option", "cursor" );
-//setter
-$( ".selector" ).draggable( "option", "cursor", 'crosshair' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-cursorAt">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-cursorAt">cursorAt</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Object</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Sets the offset of the dragging helper relative to the mouse cursor. Coordinates can be given as a hash using a combination of one or two keys: <code>{ top, left, right, bottom }</code>.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>cursorAt</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ cursorAt: { left: 5 } });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>cursorAt</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var cursorAt = $( ".selector" ).draggable( "option", "cursorAt" );
-//setter
-$( ".selector" ).draggable( "option", "cursorAt", { left: 5 } );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-delay">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-delay">delay</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Integer</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">0</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Time in milliseconds after mousedown until dragging should start. This option can be used to prevent unwanted drags when clicking on an element.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>delay</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ delay: 500 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>delay</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var delay = $( ".selector" ).draggable( "option", "delay" );
-//setter
-$( ".selector" ).draggable( "option", "delay", 500 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-distance">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-distance">distance</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Integer</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">1</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Distance in pixels after mousedown the mouse must move before dragging should start. This option can be used to prevent unwanted drags when clicking on an element.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>distance</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ distance: 30 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>distance</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var distance = $( ".selector" ).draggable( "option", "distance" );
-//setter
-$( ".selector" ).draggable( "option", "distance", 30 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-grid">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-grid">grid</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Array</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Snaps the dragging helper to a grid, every x and y pixels. Array values: [x, y]</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>grid</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ grid: [50, 20] });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>grid</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var grid = $( ".selector" ).draggable( "option", "grid" );
-//setter
-$( ".selector" ).draggable( "option", "grid", [50, 20] );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-handle">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-handle">handle</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Element, Selector</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>If specified, restricts drag start click to the specified element(s).</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>handle</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ handle: 'h2' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>handle</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var handle = $( ".selector" ).draggable( "option", "handle" );
-//setter
-$( ".selector" ).draggable( "option", "handle", 'h2' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-helper">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-helper">helper</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">String, Function</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">'original'</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Allows for a helper element to be used for dragging display. Possible values: 'original', 'clone', Function. If a function is specified, it must return a DOMElement.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>helper</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ helper: 'clone' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>helper</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var helper = $( ".selector" ).draggable( "option", "helper" );
-//setter
-$( ".selector" ).draggable( "option", "helper", 'clone' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-iframeFix">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-iframeFix">iframeFix</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Boolean, Selector</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Prevent iframes from capturing the mousemove events during a drag. Useful in combination with cursorAt, or in any case, if the mouse cursor is not over the helper. If set to true, transparent overlays will be placed over all iframes on the page. If a selector is supplied, the matched iframes will have an overlay placed over them.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>iframeFix</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ iframeFix: true });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>iframeFix</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var iframeFix = $( ".selector" ).draggable( "option", "iframeFix" );
-//setter
-$( ".selector" ).draggable( "option", "iframeFix", true );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-opacity">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-opacity">opacity</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Float</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Opacity for the helper while being dragged.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>opacity</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ opacity: 0.35 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>opacity</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var opacity = $( ".selector" ).draggable( "option", "opacity" );
-//setter
-$( ".selector" ).draggable( "option", "opacity", 0.35 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-refreshPositions">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-refreshPositions">refreshPositions</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Boolean</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>If set to true, all droppable positions are calculated on every mousemove. Caution: This solves issues on highly dynamic pages, but dramatically decreases performance.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>refreshPositions</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ refreshPositions: true });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>refreshPositions</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var refreshPositions = $( ".selector" ).draggable( "option", "refreshPositions" );
-//setter
-$( ".selector" ).draggable( "option", "refreshPositions", true );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-revert">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-revert">revert</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Boolean, String</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>If set to true, the element will return to its start position when dragging stops. Possible string values: 'valid', 'invalid'. If set to invalid, revert will only occur if the draggable has not been dropped on a droppable. For valid, it's the other way around.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>revert</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ revert: true });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>revert</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var revert = $( ".selector" ).draggable( "option", "revert" );
-//setter
-$( ".selector" ).draggable( "option", "revert", true );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-revertDuration">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-revertDuration">revertDuration</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Integer</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">500</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>The duration of the revert animation, in milliseconds. Ignored if revert is false.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>revertDuration</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ revertDuration: 1000 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>revertDuration</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var revertDuration = $( ".selector" ).draggable( "option", "revertDuration" );
-//setter
-$( ".selector" ).draggable( "option", "revertDuration", 1000 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-scope">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-scope">scope</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">String</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">'default'</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Used to group sets of draggable and droppable items, in addition to droppable's accept option. A draggable with the same scope value as a droppable will be accepted by the droppable.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>scope</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ scope: 'tasks' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>scope</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var scope = $( ".selector" ).draggable( "option", "scope" );
-//setter
-$( ".selector" ).draggable( "option", "scope", 'tasks' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-scroll">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-scroll">scroll</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Boolean</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">true</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>If set to true, container auto-scrolls while dragging.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>scroll</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ scroll: false });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>scroll</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var scroll = $( ".selector" ).draggable( "option", "scroll" );
-//setter
-$( ".selector" ).draggable( "option", "scroll", false );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-scrollSensitivity">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-scrollSensitivity">scrollSensitivity</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Integer</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">20</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Distance in pixels from the edge of the viewport after which the viewport should scroll. Distance is relative to pointer, not the draggable.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>scrollSensitivity</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ scrollSensitivity: 40 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>scrollSensitivity</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var scrollSensitivity = $( ".selector" ).draggable( "option", "scrollSensitivity" );
-//setter
-$( ".selector" ).draggable( "option", "scrollSensitivity", 40 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-scrollSpeed">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-scrollSpeed">scrollSpeed</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Integer</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">20</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>The speed at which the window should scroll once the mouse pointer gets within the <code>scrollSensitivity</code> distance.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>scrollSpeed</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ scrollSpeed: 40 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>scrollSpeed</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var scrollSpeed = $( ".selector" ).draggable( "option", "scrollSpeed" );
-//setter
-$( ".selector" ).draggable( "option", "scrollSpeed", 40 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-snap">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-snap">snap</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Boolean, Selector</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>If set to a selector or to true (equivalent to '.ui-draggable'), the draggable will snap to the edges of the selected elements when near an edge of the element.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>snap</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ snap: true });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>snap</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var snap = $( ".selector" ).draggable( "option", "snap" );
-//setter
-$( ".selector" ).draggable( "option", "snap", true );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-snapMode">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-snapMode">snapMode</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">String</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">'both'</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Determines which edges of snap elements the draggable will snap to. Ignored if snap is false. Possible values: 'inner', 'outer', 'both'</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>snapMode</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ snapMode: 'outer' });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>snapMode</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var snapMode = $( ".selector" ).draggable( "option", "snapMode" );
-//setter
-$( ".selector" ).draggable( "option", "snapMode", 'outer' );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-snapTolerance">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-snapTolerance">snapTolerance</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Integer</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">20</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>The distance in pixels from the snap element edges at which snapping should occur. Ignored if snap is false.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>snapTolerance</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ snapTolerance: 40 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>snapTolerance</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var snapTolerance = $( ".selector" ).draggable( "option", "snapTolerance" );
-//setter
-$( ".selector" ).draggable( "option", "snapTolerance", 40 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-stack">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-stack">stack</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Selector</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>Controls the z-Index of the set of elements that match the selector, always brings to front the dragged item. Very useful in things like window managers.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>stack</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ stack: &quot;.products&quot; });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>stack</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var stack = $( ".selector" ).draggable( "option", "stack" );
-//setter
-$( ".selector" ).draggable( "option", "stack", &quot;.products&quot; );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="option" id="option-zIndex">
-  <div class="option-header">
-    <h3 class="option-name"><a href="#option-zIndex">zIndex</a></h3>
-    <dl>
-      <dt class="option-type-label">Type:</dt>
-        <dd class="option-type">Integer</dd>
-      
-      <dt class="option-default-label">Default:</dt>
-        <dd class="option-default">false</dd>
-      
-    </dl>
-  </div>
-  <div class="option-description">
-    <p>z-index for the helper while being dragged.</p>
-  </div>
-  <div class="option-examples">
-    <h4>Code examples</h4>
-    <dl class="option-examples-list">
-    
-<dt>
-  Initialize a draggable with the <code>zIndex</code> option specified.
-</dt>
-<dd>
-<pre><code>$( ".selector" ).draggable({ zIndex: 2700 });</code></pre>
-</dd>
-
-    
-<dt>
-  Get or set the <code>zIndex</code> option, after init.
-</dt>
-<dd>
-<pre><code>//getter
-var zIndex = $( ".selector" ).draggable( "option", "zIndex" );
-//setter
-$( ".selector" ).draggable( "option", "zIndex", 2700 );</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-    </ul>
-  </div>
-  <div id="events">
-    <h2 class="top-header">Events</h2>
-    <ul class="events-list">
-      
-<li class="event" id="event-create">
-  <div class="event-header">
-    <h3 class="event-name"><a href="#event-create">create</a></h3>
-    <dl>
-      <dt class="event-type-label">Type:</dt>
-        <dd class="event-type">dragcreate</dd>
-    </dl>
-  </div>
-  <div class="event-description">
-    <p>This event is triggered when draggable is created.</p>
-  </div>
-  <div class="event-examples">
-    <h4>Code examples</h4>
-    <dl class="event-examples-list">
-    
-<dt>
-  Supply a callback function to handle the <code>create</code> event as an init option.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).draggable({
-   create: function(event, ui) { ... }
-});</code></pre>
-</dd>
-
-    
-<dt>
-  Bind to the <code>create</code> event by type: <code>dragcreate</code>.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).bind( &quot;dragcreate&quot;, function(event, ui) {
-  ...
-});</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="event" id="event-start">
-  <div class="event-header">
-    <h3 class="event-name"><a href="#event-start">start</a></h3>
-    <dl>
-      <dt class="event-type-label">Type:</dt>
-        <dd class="event-type">dragstart</dd>
-    </dl>
-  </div>
-  <div class="event-description">
-    <p>This event is triggered when dragging starts.</p>
-  </div>
-  <div class="event-examples">
-    <h4>Code examples</h4>
-    <dl class="event-examples-list">
-    
-<dt>
-  Supply a callback function to handle the <code>start</code> event as an init option.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).draggable({
-   start: function(event, ui) { ... }
-});</code></pre>
-</dd>
-
-    
-<dt>
-  Bind to the <code>start</code> event by type: <code>dragstart</code>.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).bind( &quot;dragstart&quot;, function(event, ui) {
-  ...
-});</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="event" id="event-drag">
-  <div class="event-header">
-    <h3 class="event-name"><a href="#event-drag">drag</a></h3>
-    <dl>
-      <dt class="event-type-label">Type:</dt>
-        <dd class="event-type">drag</dd>
-    </dl>
-  </div>
-  <div class="event-description">
-    <p>This event is triggered when the mouse is moved during the dragging.</p>
-  </div>
-  <div class="event-examples">
-    <h4>Code examples</h4>
-    <dl class="event-examples-list">
-    
-<dt>
-  Supply a callback function to handle the <code>drag</code> event as an init option.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).draggable({
-   drag: function(event, ui) { ... }
-});</code></pre>
-</dd>
-
-    
-<dt>
-  Bind to the <code>drag</code> event by type: <code>drag</code>.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).bind( &quot;drag&quot;, function(event, ui) {
-  ...
-});</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-
-<li class="event" id="event-stop">
-  <div class="event-header">
-    <h3 class="event-name"><a href="#event-stop">stop</a></h3>
-    <dl>
-      <dt class="event-type-label">Type:</dt>
-        <dd class="event-type">dragstop</dd>
-    </dl>
-  </div>
-  <div class="event-description">
-    <p>This event is triggered when dragging stops.</p>
-  </div>
-  <div class="event-examples">
-    <h4>Code examples</h4>
-    <dl class="event-examples-list">
-    
-<dt>
-  Supply a callback function to handle the <code>stop</code> event as an init option.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).draggable({
-   stop: function(event, ui) { ... }
-});</code></pre>
-</dd>
-
-    
-<dt>
-  Bind to the <code>stop</code> event by type: <code>dragstop</code>.
-</dt>
-<dd>
-<pre><code>$( &quot;.selector&quot; ).bind( &quot;dragstop&quot;, function(event, ui) {
-  ...
-});</code></pre>
-</dd>
-
-    </dl>
-  </div>
-</li>
-
-    </ul>
-  </div>
-  <div id="methods">
-    <h2 class="top-header">Methods</h2>
-    <ul class="methods-list">
-      
-<li class="method" id="method-destroy">
-  <div class="method-header">
-    <h3 class="method-name"><a href="#method-destroy">destroy</a></h3>
-    <dl>
-      <dt class="method-signature-label">Signature:</dt>
-        <dd class="method-signature">.draggable( "destroy"
-
-
-
-
-
-
-
-)</dd>
-    </dl>
-  </div>
-  <div class="method-description">
-    <p>Remove the draggable functionality completely. This will return the element back to its pre-init state.</p>
-  </div>
-</li>
-
-
-<li class="method" id="method-disable">
-  <div class="method-header">
-    <h3 class="method-name"><a href="#method-disable">disable</a></h3>
-    <dl>
-      <dt class="method-signature-label">Signature:</dt>
-        <dd class="method-signature">.draggable( "disable"
-
-
-
-
-
-
-
-)</dd>
-    </dl>
-  </div>
-  <div class="method-description">
-    <p>Disable the draggable.</p>
-  </div>
-</li>
-
-
-<li class="method" id="method-enable">
-  <div class="method-header">
-    <h3 class="method-name"><a href="#method-enable">enable</a></h3>
-    <dl>
-      <dt class="method-signature-label">Signature:</dt>
-        <dd class="method-signature">.draggable( "enable"
-
-
-
-
-
-
-
-)</dd>
-    </dl>
-  </div>
-  <div class="method-description">
-    <p>Enable the draggable.</p>
-  </div>
-</li>
-
-
-<li class="method" id="method-option">
-  <div class="method-header">
-    <h3 class="method-name"><a href="#method-option">option</a></h3>
-    <dl>
-      <dt class="method-signature-label">Signature:</dt>
-        <dd class="method-signature">.draggable( "option"
-
-, optionName
-
-, <span class="optional">[</span>value<span class="optional">] </span>
-
-
-
-)</dd>
-    </dl>
-  </div>
-  <div class="method-description">
-    <p>Get or set any draggable option. If no value is specified, will act as a getter.</p>
-  </div>
-</li>
-
-
-<li class="method" id="method-option">
-  <div class="method-header">
-    <h3 class="method-name"><a href="#method-option">option</a></h3>
-    <dl>
-      <dt class="method-signature-label">Signature:</dt>
-        <dd class="method-signature">.draggable( "option"
-
-, options
-
-
-
-
-
-)</dd>
-    </dl>
-  </div>
-  <div class="method-description">
-    <p>Set multiple draggable options at once by providing an options object.</p>
-  </div>
-</li>
-
-
-<li class="method" id="method-widget">
-  <div class="method-header">
-    <h3 class="method-name"><a href="#method-widget">widget</a></h3>
-    <dl>
-      <dt class="method-signature-label">Signature:</dt>
-        <dd class="method-signature">.draggable( "widget"
-
-
-
-
-
-
-
-)</dd>
-    </dl>
-  </div>
-  <div class="method-description">
-    <p>Returns the .ui-draggable element.</p>
-  </div>
-</li>
-
-
-    </ul>
-  </div>
-  <div id="theming">
-    <h2 class="top-header">Theming</h2>
-    <p>The jQuery UI Draggable plugin uses the jQuery UI CSS Framework to style its look and feel, including colors and background textures. We recommend using the ThemeRoller tool to create and download custom themes that are easy to build and maintain.
-</p>
-  <p>If a deeper level of customization is needed, there are widget-specific classes referenced within the jquery.ui.draggable.css stylesheet that can be modified. These classes are highlighed in bold below.
-</p>
-    
-  <h3>Sample markup with jQuery UI CSS Framework classes</h3>
-  &lt;div class=&quot;<strong>ui-draggable</strong>&quot;&gt;&lt;/div&gt;
-  <p class="theme-note">
-    <strong>
-      Note: This is a sample of markup generated by the draggable plugin, not markup you should use to create a draggable. The only markup needed for that is &lt;div&gt;&lt;/div&gt;.
-    </strong>
-  </p>
-
-  </div>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>jQuery UI draggable documentation</title>
+
+	<style>
+	body {
+		font-family: "Trebuchet MS", "Arial", "Helvetica", "Verdana", "sans-serif"
+	}
+	.gutter {
+		display: none;
+	}
+	</style>
+</head>
+<body>
+
+<script>{
+		"title":
+			"Draggable Widget",
+		"excerpt":
+			"Allow elements to be moved using the mouse.",
+		"termSlugs": {
+			"category": [
+				"interactions"
+			]
+		}
+	}</script><section class="quick-nav"><header><h2>QuickNav</h2></header><div class="quick-nav-section">
+<h3>Options</h3>
+<div><a href="#option-addClasses">addClasses</a></div>
+<div><a href="#option-appendTo">appendTo</a></div>
+<div><a href="#option-axis">axis</a></div>
+<div><a href="#option-cancel">cancel</a></div>
+<div><a href="#option-connectToSortable">connectToSortable</a></div>
+<div><a href="#option-containment">containment</a></div>
+<div><a href="#option-cursor">cursor</a></div>
+<div><a href="#option-cursorAt">cursorAt</a></div>
+<div><a href="#option-delay">delay</a></div>
+<div><a href="#option-disabled">disabled</a></div>
+<div><a href="#option-distance">distance</a></div>
+<div><a href="#option-grid">grid</a></div>
+<div><a href="#option-handle">handle</a></div>
+<div><a href="#option-helper">helper</a></div>
+<div><a href="#option-iframeFix">iframeFix</a></div>
+<div><a href="#option-opacity">opacity</a></div>
+<div><a href="#option-refreshPositions">refreshPositions</a></div>
+<div><a href="#option-revert">revert</a></div>
+<div><a href="#option-revertDuration">revertDuration</a></div>
+<div><a href="#option-scope">scope</a></div>
+<div><a href="#option-scroll">scroll</a></div>
+<div><a href="#option-scrollSensitivity">scrollSensitivity</a></div>
+<div><a href="#option-scrollSpeed">scrollSpeed</a></div>
+<div><a href="#option-snap">snap</a></div>
+<div><a href="#option-snapMode">snapMode</a></div>
+<div><a href="#option-snapTolerance">snapTolerance</a></div>
+<div><a href="#option-stack">stack</a></div>
+<div><a href="#option-zIndex">zIndex</a></div>
 </div>
+<div class="quick-nav-section">
+<h3>Methods</h3>
+<div><a href="#method-destroy">destroy</a></div>
+<div><a href="#method-disable">disable</a></div>
+<div><a href="#method-enable">enable</a></div>
+<div><a href="#method-option">option</a></div>
+<div><a href="#method-widget">widget</a></div>
+</div>
+<div class="quick-nav-section">
+<h3>Events</h3>
+<div><a href="#event-create">create</a></div>
+<div><a href="#event-start">start</a></div>
+<div><a href="#event-drag">drag</a></div>
+<div><a href="#event-stop">stop</a></div>
+</div></section><article id="draggable1" class="entry widget"><h2 class="section-title">
+<span>Draggable Widget</span><span class="version-details">version added: 1.0</span>
+</h2>
+<div class="entry-wrapper">
+<p class="desc"><strong>Description: </strong>Allow elements to be moved using the mouse.</p>
+<section id="options"><header><h2 class="underline">Options</h2></header><div id="option-addClasses" class="api-item first-item">
+<h3>addClasses<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Boolean">Boolean</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>true</code>
+</div>
+<div>If set to <code>false</code>, will prevent the <code>ui-draggable</code> class from being added. This may be desired as a performance optimization when calling <code>.draggable()</code> on hundreds of elements.</div>
+</div>
+<div id="option-appendTo" class="api-item">
+<h3>appendTo<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#jQuery">jQuery</a> or <a href="http://api.jquery.com/Types#Element">Element</a> or <a href="http://api.jquery.com/Types#Selector">Selector</a> or <a href="http://api.jquery.com/Types#String">String</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>"parent"</code>
+</div>
+<div>Which element the draggable helper should be appended to while dragging.</div>
+<strong>Multiple types supported:</strong><ul>
+<li>
+<strong>jQuery</strong>: A jQuery object containing the element to append the helper to.</li>
+<li>
+<strong>Element</strong>: The element to append the helper to.</li>
+<li>
+<strong>Selector</strong>: A selector specifying which element to append the helper to.</li>
+<li>
+<strong>String</strong>: The string <code>"parent"</code> will cause the helper to be a sibling of the draggable.</li>
+</ul>
+</div>
+<div id="option-axis" class="api-item">
+<h3>axis<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#String">String</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Constrains dragging to either the horizontal (x) or vertical (y) axis. Possible values: <code>"x"</code>, <code>"y"</code>.</div>
+</div>
+<div id="option-cancel" class="api-item">
+<h3>cancel<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Selector">Selector</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>"input,textarea,button,select,option"</code>
+</div>
+<div>Prevents dragging from starting on specified elements.</div>
+</div>
+<div id="option-connectToSortable" class="api-item">
+<h3>connectToSortable<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Selector">Selector</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Allows the draggable to be dropped onto the specified sortables. If this option is used, a draggable can be dropped onto a sortable list and then becomes part of it. Note: The <a href="#option-helper"><code>helper</code></a> option must be set to <code>"clone"</code> in order to work flawlessly. Requires the <a href="/sortable/">jQuery UI Sortable plugin</a> to be included.</div>
+</div>
+<div id="option-containment" class="api-item">
+<h3>containment<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Selector">Selector</a> or <a href="http://api.jquery.com/Types#Element">Element</a> or <a href="http://api.jquery.com/Types#String">String</a> or <a href="http://api.jquery.com/Types#Array">Array</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Constrains dragging to within the bounds of the specified element or region.</div>
+<strong>Multiple types supported:</strong><ul>
+<li>
+<strong>Selector</strong>: The draggable element will be contained to the bounding box of the first element found by the selector. If no element is found, no containment will be set.</li>
+<li>
+<strong>Element</strong>: The draggable element will be contained to the bounding box of this element.</li>
+<li>
+<strong>String</strong>: Possible values: <code>"parent"</code>, <code>"document"</code>, <code>"window"</code>.</li>
+<li>
+<strong>Array</strong>: An array defining a bounding box in the form <code>[ x1, y1, x2, y2 ]</code>.</li>
+</ul>
+</div>
+<div id="option-cursor" class="api-item">
+<h3>cursor<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#String">String</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>"auto"</code>
+</div>
+<div>The CSS cursor during the drag operation.</div>
+</div>
+<div id="option-cursorAt" class="api-item">
+<h3>cursorAt<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Object">Object</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Sets the offset of the dragging helper relative to the mouse cursor. Coordinates can be given as a hash using a combination of one or two keys: <code>{ top, left, right, bottom }</code>.</div>
+</div>
+<div id="option-delay" class="api-item">
+<h3>delay<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>0</code>
+</div>
+<div>Time in milliseconds after mousedown until dragging should start. This option can be used to prevent unwanted drags when clicking on an element.</div>
+</div>
+<div id="option-disabled" class="api-item">
+<h3>disabled<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Boolean">Boolean</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Disables the draggable if set to <code>true</code>.</div>
+</div>
+<div id="option-distance" class="api-item">
+<h3>distance<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>1</code>
+</div>
+<div>Distance in pixels after mousedown the mouse must move before dragging should start. This option can be used to prevent unwanted drags when clicking on an element.</div>
+</div>
+<div id="option-grid" class="api-item">
+<h3>grid<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Array">Array</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Snaps the dragging helper to a grid, every x and y pixels. The array must be of the form <code>[ x, y ]</code>.</div>
+</div>
+<div id="option-handle" class="api-item">
+<h3>handle<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Selector">Selector</a> or <a href="http://api.jquery.com/Types#Element">Element</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>If specified, restricts dragging from starting unless the mousedown occurs on the specified element(s).</div>
+</div>
+<div id="option-helper" class="api-item">
+<h3>helper<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#String">String</a> or <a href="http://api.jquery.com/Types/#Function">Function</a>()</span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>"original"</code>
+</div>
+<div>Allows for a helper element to be used for dragging display.</div>
+<strong>Multiple types supported:</strong><ul>
+<li>
+<strong>String</strong>: If set to <code>"clone"</code>, then the element will be cloned and the clone will be dragged.</li>
+<li>
+<strong>Function</strong>: A function that will return a DOMElement to use while dragging.</li>
+</ul>
+</div>
+<div id="option-iframeFix" class="api-item">
+<h3>iframeFix<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Boolean">Boolean</a> or <a href="http://api.jquery.com/Types#Selector">Selector</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Prevent iframes from capturing the mousemove events during a drag. Useful in combination with the <a href="#option-cursorAt"><code>cursorAt</code></a> option, or in any case where the mouse cursor may not be over the helper.</div>
+<strong>Multiple types supported:</strong><ul>
+<li>
+<strong>Boolean</strong>: When set to <code>true</code>, transparent overlays will be placed over all iframes on the page.</li>
+<li>
+<strong>Selector</strong>: Any iframes matching the selector will be covered by transparent overlays.</li>
+</ul>
+</div>
+<div id="option-opacity" class="api-item">
+<h3>opacity<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Opacity for the helper while being dragged.</div>
+</div>
+<div id="option-refreshPositions" class="api-item">
+<h3>refreshPositions<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Boolean">Boolean</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>
+				If set to <code>true</code>, all droppable positions are calculated on every mousemove.
+				<em>Caution: This solves issues on highly dynamic pages, but dramatically decreases performance.</em>
+			</div>
+</div>
+<div id="option-revert" class="api-item">
+<h3>revert<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Boolean">Boolean</a> or <a href="http://api.jquery.com/Types#String">String</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Whether the element should revert to its start position when dragging stops.</div>
+<strong>Multiple types supported:</strong><ul>
+<li>
+<strong>Boolean</strong>: If set to <code>true</code> the element will always revert.</li>
+<li>
+<strong>String</strong>: If set to <code>"invalid"</code>, revert will only occur if the draggable has not been dropped on a droppable. For <code>"valid"</code>, it's the other way around.</li>
+</ul>
+</div>
+<div id="option-revertDuration" class="api-item">
+<h3>revertDuration<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>500</code>
+</div>
+<div>The duration of the revert animation, in milliseconds. Ignored if the <a href="#option-revert"><code>revert</code></a> option is <code>false</code>.</div>
+</div>
+<div id="option-scope" class="api-item">
+<h3>scope<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#String">String</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>"default"</code>
+</div>
+<div>Used to group sets of draggable and droppable items, in addition to droppable's <a href="/droppable#option-accept"><code>accept</code></a> option. A draggable with the same <code>scope</code> value as a droppable will be accepted by the droppable.</div>
+</div>
+<div id="option-scroll" class="api-item">
+<h3>scroll<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Boolean">Boolean</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>true</code>
+</div>
+<div>If set to <code>true</code>, container auto-scrolls while dragging.</div>
+</div>
+<div id="option-scrollSensitivity" class="api-item">
+<h3>scrollSensitivity<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>20</code>
+</div>
+<div>Distance in pixels from the edge of the viewport after which the viewport should scroll. Distance is relative to pointer, not the draggable. Ignored if the <a href="#option-scroll"><code>scroll</code></a> option is <code>false</code>.</div>
+</div>
+<div id="option-scrollSpeed" class="api-item">
+<h3>scrollSpeed<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>20</code>
+</div>
+<div>The speed at which the window should scroll once the mouse pointer gets within the <a href="#option-scrollSensitivity"><code>scrollSensitivity</code></a> distance. Ignored if the <a href="#option-scroll"><code>scroll</code></a> option is <code>false</code>.</div>
+</div>
+<div id="option-snap" class="api-item">
+<h3>snap<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Boolean">Boolean</a> or <a href="http://api.jquery.com/Types#Selector">Selector</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Whether the element should snap to other elements.</div>
+<strong>Multiple types supported:</strong><ul>
+<li>
+<strong>Boolean</strong>: When set to <code>true</code>, the element will snap to all other draggable elements.</li>
+<li>
+<strong>Selector</strong>: A selector specifying which elements to snap to.</li>
+</ul>
+</div>
+<div id="option-snapMode" class="api-item">
+<h3>snapMode<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#String">String</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>"both"</code>
+</div>
+<div>Determines which edges of snap elements the draggable will snap to. Ignored if the <a href="#option-snap"><code>snap</code></a> option is <code>false</code>. Possible values: <code>"inner"</code>, <code>"outer"</code>, <code>"both"</code>.</div>
+</div>
+<div id="option-snapTolerance" class="api-item">
+<h3>snapTolerance<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>20</code>
+</div>
+<div>The distance in pixels from the snap element edges at which snapping should occur. Ignored if the <a href="#option-snap"><code>snap</code></a> option is <code>false</code>.</div>
+</div>
+<div id="option-stack" class="api-item">
+<h3>stack<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Selector">Selector</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Controls the z-index of the set of elements that match the selector, always brings the currently dragged item to the front. Very useful in things like window managers.</div>
+</div>
+<div id="option-zIndex" class="api-item">
+<h3>zIndex<span class="option-type"><strong>Type: </strong><a href="http://api.jquery.com/Types#Number">Number</a></span>
+</h3>
+<div class="default">
+<strong>Default: </strong><code>false</code>
+</div>
+<div>Z-index for the helper while being dragged.</div>
+</div></section><section id="methods"><header><h2 class="underline">Methods</h2></header><div id="method-destroy"><div class="api-item first-item">
+<h3>destroy()</h3>
+<div>
+		Removes the draggable functionality completely. This will return the element back to its pre-init state.
+	</div>
+</div></div>
+<div id="method-disable"><div class="api-item">
+<h3>disable()</h3>
+<div>
+		Disables the draggable.
+	</div>
+</div></div>
+<div id="method-enable"><div class="api-item">
+<h3>enable()</h3>
+<div>
+		Enables the draggable.
+	</div>
+</div></div>
+<div id="method-option">
+<div class="api-item">
+<h3>option( optionName ) <span class="returns">Returns: <a class="return" href="http://api.jquery.com/Types/#Object">Object</a></span>
+</h3>
+<div>Gets the value currently associated with the specified <code>optionName</code>.</div>
+<ul><li>
+<div><strong>optionName</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#String">String</a>
+</div>
+<div>The name of the option to get.</div>
+</li></ul>
+</div>
+<div class="api-item">
+<h3>option() <span class="returns">Returns: <a class="return" href="http://api.jquery.com/Types/#PlainObject">PlainObject</a></span>
+</h3>
+<div>Gets an object containing key/value pairs representing the current draggable options hash.</div>
+</div>
+<div class="api-item">
+<h3>option( optionName, value )</h3>
+<div>Sets the value of the draggable option associated with the specified <code>optionName</code>.</div>
+<ul>
+<li>
+<div><strong>optionName</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#String">String</a>
+</div>
+<div>The name of the option to set.</div>
+</li>
+<li>
+<div><strong>value</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>A value to set for the option.</div>
+</li>
+</ul>
+</div>
+<div class="api-item">
+<h3>option( options )</h3>
+<div>Sets one or more options for the draggable.</div>
+<ul><li>
+<div><strong>options</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>A map of option-value pairs to set.</div>
+</li></ul>
+</div>
+</div>
+<div id="method-widget"><div class="api-item">
+<h3>widget() <span class="returns">Returns: <a class="return" href="http://api.jquery.com/Types/#jQuery">jQuery</a></span>
+</h3>
+<div>
+		Returns a <code>jQuery</code> object containing the draggable element.
+	</div>
+</div></div></section><section id="events"><header><h2 class="underline">Events</h2></header><div id="event-create" class="api-item first-item">
+<h3>create( event, ui )</h3>
+<div>
+		Triggered when the draggable is created.
+	</div>
+<ul>
+<li>
+<div><strong>event</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Event">Event</a>
+</div>
+<div></div>
+</li>
+<li>
+<div><strong>ui</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div></div>
+</li>
+</ul>
+</div>
+<div id="event-drag" class="api-item">
+<h3>drag( event, ui )</h3>
+<div>Triggered while the mouse is moved during the dragging.</div>
+<ul>
+<li>
+<div><strong>event</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Event">Event</a>
+</div>
+<div></div>
+</li>
+<li>
+<div><strong>ui</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div></div>
+<ul>
+<li>
+<div><strong>helper</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#jQuery">jQuery</a>
+</div>
+<div>The jQuery object representing the helper that's being dragged.</div>
+</li>
+<li>
+<div><strong>position</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>Current CSS position of the helper as <code>{ top, left }</code> object.</div>
+</li>
+<li>
+<div><strong>offset</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>Current offset position of the helper as <code>{ top, left }</code> object.</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="event-start" class="api-item">
+<h3>start( event, ui )</h3>
+<div>Triggered when dragging starts.</div>
+<ul>
+<li>
+<div><strong>event</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Event">Event</a>
+</div>
+<div></div>
+</li>
+<li>
+<div><strong>ui</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div></div>
+<ul>
+<li>
+<div><strong>helper</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#jQuery">jQuery</a>
+</div>
+<div>The jQuery object representing the helper that's being dragged.</div>
+</li>
+<li>
+<div><strong>position</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>Current CSS position of the helper as <code>{ top, left }</code> object.</div>
+</li>
+<li>
+<div><strong>offset</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>Current offset position of the helper as <code>{ top, left }</code> object.</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="event-stop" class="api-item">
+<h3>stop( event, ui )</h3>
+<div>Triggered when dragging stops.</div>
+<ul>
+<li>
+<div><strong>event</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Event">Event</a>
+</div>
+<div></div>
+</li>
+<li>
+<div><strong>ui</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div></div>
+<ul>
+<li>
+<div><strong>helper</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#jQuery">jQuery</a>
+</div>
+<div>The jQuery object representing the helper that's being dragged.</div>
+</li>
+<li>
+<div><strong>position</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>Current CSS position of the helper as <code>{ top, left }</code> object.</div>
+</li>
+<li>
+<div><strong>offset</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types#Object">Object</a>
+</div>
+<div>Current offset position of the helper as <code>{ top, left }</code> object.</div>
+</li>
+</ul>
+</li>
+</ul>
+</div></section><div class="longdesc">
+		<p>Make the selected elements draggable by mouse. If you want not just drag, but drag &amp; drop, see the <a href="/droppable/">jQuery UI Droppable plugin</a>, which provides a drop target for draggables.</p>
+	</div>
+<section class="entry-examples" id="entry-examples"><header><h2 class="underline">Example:</h2></header><div class="entry-example" id="example-0">
+<h4><span class="desc">A simple jQuery UI Draggable</span></h4>
+<div class="syntaxhighlighter  "><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2">19</div><div class="line number20 index19 alt1">20</div><div class="line number21 index20 alt2">21</div><div class="line number22 index21 alt1">22</div><div class="line number23 index22 alt2">23</div><div class="line number24 index23 alt1">24</div><div class="line number25 index24 alt2">25</div><div class="line number26 index25 alt1">26</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="plain">&lt;!doctype html&gt;</code></div><div class="line number2 index1 alt1"><code class="plain">&lt;</code><code class="keyword">html</code> <code class="color1">lang</code><code class="plain">=</code><code class="string">"en"</code><code class="plain">&gt;</code></div><div class="line number3 index2 alt2"><code class="plain">&lt;</code><code class="keyword">head</code><code class="plain">&gt;</code></div><div class="line number4 index3 alt1"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">&lt;</code><code class="keyword">meta</code> <code class="color1">charset</code><code class="plain">=</code><code class="string">"utf-8"</code><code class="plain">&gt;</code></div><div class="line number5 index4 alt2"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">&lt;</code><code class="keyword">title</code><code class="plain">&gt;draggable demo&lt;/</code><code class="keyword">title</code><code class="plain">&gt;</code></div><div class="line number6 index5 alt1"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">&lt;</code><code class="keyword">link</code> <code class="color1">rel</code><code class="plain">=</code><code class="string">"stylesheet"</code> <code class="color1">href</code><code class="plain">=</code><code class="string">"<a href="http://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css">http://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css</a>"</code><code class="plain">&gt;</code></div><div class="line number7 index6 alt2"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">&lt;</code><code class="keyword">style</code><code class="plain">&gt;</code></div><div class="line number8 index7 alt1"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">#draggable {</code></div><div class="line number9 index8 alt2"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">width: 100px;</code></div><div class="line number10 index9 alt1"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">height: 100px;</code></div><div class="line number11 index10 alt2"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">background: #ccc;</code></div><div class="line number12 index11 alt1"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">}</code></div><div class="line number13 index12 alt2"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">&lt;/</code><code class="keyword">style</code><code class="plain">&gt;</code></div><div class="line number14 index13 alt1"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">&lt;</code><code class="keyword">script</code> <code class="color1">src</code><code class="plain">=</code><code class="string">"<a href="http://code.jquery.com/jquery-1.8.2.js">http://code.jquery.com/jquery-1.8.2.js</a>"</code><code class="plain">&gt;&lt;/</code><code class="keyword">script</code><code class="plain">&gt;</code></div><div class="line number15 index14 alt2"><code class="undefined spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="plain">&lt;</code><code class="keyword">script</code> <code class="color1">src</code><code class="plain">=</code><code class="string">"<a href="http://code.jquery.com/ui/1.9.0/jquery-ui.js">http://code.jquery.com/ui/1.9.0/jquery-ui.js</a>"</code><code class="plain">&gt;&lt;/</code><code class="keyword">script</code><code class="plain">&gt;</code></div><div class="line number16 index15 alt1"><code class="plain">&lt;/</code><code class="keyword">head</code><code class="plain">&gt;</code></div><div class="line number17 index16 alt2"><code class="plain">&lt;</code><code class="keyword">body</code><code class="plain">&gt;</code></div><div class="line number18 index17 alt1">&nbsp;</div><div class="line number19 index18 alt2"><code class="plain">&lt;</code><code class="keyword">div</code> <code class="color1">id</code><code class="plain">=</code><code class="string">"draggable"</code><code class="plain">&gt;Drag me&lt;/</code><code class="keyword">div</code><code class="plain">&gt;</code></div><div class="line number20 index19 alt1">&nbsp;</div><div class="line number21 index20 alt2"><code class="plain">&lt;</code><code class="keyword">script</code><code class="plain">&gt;</code></div><div class="line number22 index21 alt1"><code class="plain">$( "#draggable" ).draggable();</code></div><div class="line number23 index22 alt2"><code class="plain">&lt;/</code><code class="keyword">script</code><code class="plain">&gt;</code></div><div class="line number24 index23 alt1">&nbsp;</div><div class="line number25 index24 alt2"><code class="plain">&lt;/</code><code class="keyword">body</code><code class="plain">&gt;</code></div><div class="line number26 index25 alt1"><code class="plain">&lt;/</code><code class="keyword">html</code><code class="plain">&gt;</code></div></div></td></tr></tbody></table></div>
+<h4>Demo:</h4>
+<div class="demo code-demo"></div>
+</div></section>
+</div></article>
 
-</p><!-- 
-Pre-expand include size: 61392 bytes
-Post-expand include size: 107565 bytes
-Template argument size: 58710 bytes
-Maximum: 2097152 bytes
--->
-
-<!-- Saved in parser cache with key jqdocs_docs:pcache:idhash:3768-1!1!0!!en!2 and timestamp 20110112154359 -->
+</body>
+</html>
