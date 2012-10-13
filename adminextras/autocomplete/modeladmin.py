@@ -2,7 +2,6 @@
 
 from django.db import models
 from django.conf import settings
-from adminextras.responses import SimpleJsonResponse
 
 def build_autocomplete_query(model_admin, value):
     '''
