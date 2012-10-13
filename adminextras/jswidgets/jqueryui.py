@@ -21,8 +21,9 @@ decamelize = lambda s: re.sub('((?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z]))', '_', s).lo
 
 class DatePickerInputWidget(widgets.DateInput):
     '''
-    jQuery UI datepicker adapter for django widgets
-    
+    jQuery UI datepikcer widget.
+    Accepts configuration in python format (altField => alt_field).
+    See docs at: http://api.jqueryui.com/datepicker/
     '''
     __metaclass__ = MediaSubstitutionMetaclass
     
@@ -41,19 +42,16 @@ class DatePickerInputWidget(widgets.DateInput):
     
     class Media:
         js = (
-              settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",) + (
-              settings.USE_SPARSE_UI and (
-              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
-              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js", 
-              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.datepicker.js",
-              ) or (
-              settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js',
-              )) + (
-              settings.STATIC_URL + 'js/jquery-ui/development-bundle/ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
-              settings.STATIC_URL + 'js/adminextras/datepicker.js',
+              'js/jquery-ui/js/jquery.min.js',
+              'js/jquery-ui/development-bundle/ui/i18n/jquery.ui.datepicker-${settings.LANGUAGE_CODE:split("-"):[0]}.js',
+              'js/adminextras/datepicker.js',
               )
         css = {
-               'all': (settings.STATIC_URL + 'css/adminextras/calendar.css',)
+               'all': (
+                       'css/adminextras/calendar.css',
+                       'js/jquery-ui/css/cupertino/jquery-ui.custom.css',
+                       )
+                       
                }
 
     def __init__(self, attrs={}, format=None, **opts):
@@ -133,22 +131,12 @@ class ButtonWidget(widgets.Widget):
 class DialogMedia(widgets.Media):
     ''' Medios para el diálgo de jQuery '''
     js =  (
-          settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",
-          ) + (settings.USE_SPARSE_UI and (
-          settings.STATIC_URL + "js/jquery-ui/development-bundle//external/jquery.bgiframe-2.1.2.js",
-          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
-          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js", 
-          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.mouse.js", 
-          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.draggable.js", 
-          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.position.js", 
-          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.resizable.js", 
-          settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.dialog.js",
-          ) or (
-          settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js',
-          ))
+          'js/jquery-ui/js/jquery.min.js',
+          'js/jquery-ui/js/jquery-ui.min.js',
+          )
     css = {
            'all': (
-                   settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
+                   'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
                    )
            }
 
@@ -190,18 +178,17 @@ class jQueryUIMultiSelect(widgets.SelectMultiple):
     
     class Media:
         js = (
-              settings.STATIC_URL + "js/jquery-ui/js/jquery.min.js",    # jQuery
-              settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js', # jQueryUi
-              settings.STATIC_URL + 'js/multiselect/src/jquery.multiselect.min.js',
-              settings.STATIC_URL + 'js/multiselect/src/jquery.multiselect.filter.min.js',
-              settings.STATIC_URL + 'js/multiselect/i18n/jquery.multiselect.es.js',
-              #settings.STATIC_URL + "js/adminextras/multiselect.js",
+              'js/jquery-ui/js/jquery.min.js',    # jQuery
+              'js/jquery-ui/js/jquery-ui.min.js', # jQueryUi
+              'js/multiselect/src/jquery.multiselect.min.js',
+              'js/multiselect/src/jquery.multiselect.filter.min.js',
+              'js/multiselect/i18n/jquery.multiselect.es.js',
               )
         css = {
                'all': (
-                       settings.STATIC_URL + 'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
-                       settings.STATIC_URL + 'js/multiselect/jquery.multiselect.css',
-                       settings.STATIC_URL + 'js/multiselect/jquery.multiselect.filter.css',
+                       'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
+                       'js/multiselect/jquery.multiselect.css',
+                       'js/multiselect/jquery.multiselect.filter.css',
                        )
                
                }
