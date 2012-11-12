@@ -115,17 +115,15 @@ class ButtonWidget(widgets.Widget):
         return html
     
     class Media:
-        js = (settings.USE_SPARSE_UI and (
-              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.core.js", 
-              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.widget.js",
-              settings.STATIC_URL + "js/jquery-ui/development-bundle/ui/jquery.ui.button.js",
-              ) or (
-              settings.STATIC_URL + 'js/jquery-ui/js/jquery-ui.min.js',
-              )) + (
-              settings.STATIC_URL + "js/adminextras/button.js", 
+        js = (
+              'js/jquery-ui/js/jquery-ui.min.js',
+              'js/adminextras/button.js', 
               )
         css = {
-            'all': ( ),
+            'all': (
+                    'js/jquery-ui/css/cupertino/jquery-ui.custom.css', 
+                    
+                    ),
         }
 
 class DialogMedia(widgets.Media):
@@ -136,7 +134,8 @@ class DialogMedia(widgets.Media):
           )
     css = {
            'all': (
-                   'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
+                   #'js/jquery-ui/development-bundle/themes/base/jquery.ui.all.css',
+                   'js/jquery-ui/css/cupertino/jquery-ui.custom.css',
                    )
            }
 
